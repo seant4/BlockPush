@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL2/SDL.h>
 
 struct Wall{
 	int x; //X pos
@@ -9,5 +10,6 @@ struct Wall{
 		x(xi), y(yi), w(wi), h(hi){}
 };
 
-void drawWall(int x, int y, int w, int h);
+
+void drawWall(int x, int y, int w, int h, SDL_Texture* texture);
 void updateWall(Wall* w);

@@ -33,7 +33,7 @@ void updateManager(Manager* manager, int key){
 
 void createManager(Manager* manager){
 	std::vector<std::vector<int>> map;
-	loadLevel("./lib/Levels/lvl1.txt", map);
+	loadLevel("./lib/Levels/lvl2.txt", map);
 	int width = map[0].size();
 	int height = map.size();
 

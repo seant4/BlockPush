@@ -41,13 +41,15 @@ void drawExRoom(ExRoom* room){
 	}	
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
-			if(room->board[i][j] == 2){
+			if(room->board[i][j] == 2){ //Player
 				drawPlayer(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
-			}else if(room->board[i][j] == 3){
-				drawWall(j * blockSize, i * blockSize, blockSize, blockSize);
-			}else if(room->board[i][j] == 1){
+			}else if(room->board[i][j] == 3){ //Wall
+				drawWall(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+			}else if(room->board[i][j] == 1){ //Moveable block
 				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
-			} //Else draw none (0, 4)
+			}else if(room->board[i][j] == 5){ //Border
+				drawBorder(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+			}
 		}
 	}
 }
@@ -86,7 +88,7 @@ bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
 		Position new_pos = {pos.first + direction.first, pos.second + direction.second};
-		if(room->board[new_pos.first][new_pos.second] == 3 ||
+		if(room->board[new_pos.first][new_pos.second] == 3 || room->board[new_pos.first][new_pos.second] == 5 ||
 				(room->board[new_pos.first][new_pos.second] == 1 &&
 				 find(block_group.begin(), block_group.end(), new_pos) == block_group.end())) {
 			return false;
@@ -113,7 +115,7 @@ bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position
 
 bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
 	Position new_player_pos = {player_pos.first	+ direction.first, player_pos.second + direction.second};
-	if(room->board[new_player_pos.first][new_player_pos.second] == 3){
+	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
 		return false;
 	}
 	if(room->board[new_player_pos.first][new_player_pos.second] == 1){
@@ -124,9 +126,16 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
 	}
 
 	//Move player
-	room->board[player_pos.first][player_pos.second] = 0;
-	room->board[new_player_pos.first][new_player_pos.second] = 2;
-	player_pos = new_player_pos;
+	if(room->board[player_pos.first][player_pos.second] == 1){
+		room->board[player_pos.first][player_pos.second] = 1;
+		room->board[new_player_pos.first][new_player_pos.second] = 2;
+		player_pos = new_player_pos;
+	}else{
+		room->board[player_pos.first][player_pos.second] = 0;
+		room->board[new_player_pos.first][new_player_pos.second] = 2;
+		player_pos = new_player_pos;
+	}
+
 	return true;
 }
 

@@ -6,6 +6,7 @@
 #include "../Objects/Block.h"
 #include "../Objects/Wall.h"
 #include "../Objects/WinBlock.h"
+#include "../Objects/Border.h"
 
 struct ExRoom {
     SDL_Texture* background;
