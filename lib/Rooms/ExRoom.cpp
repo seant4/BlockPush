@@ -18,6 +18,14 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 	room->height = height;
 	room->width = width;
 	room->board = temp;
+	//Find win condition tiles
+	for(int i = 0; i < height; i++){
+		for(int j = 0; j < width; j++){
+			if(room->board[i][j] == 4){
+				room->wincon.emplace_back(i,j);
+			}
+		}
+	}
 }
 
 void drawExRoom(ExRoom* room){
@@ -26,6 +34,11 @@ void drawExRoom(ExRoom* room){
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect boardBack = {0,0,room->width * 50, room->height * 50};
 	SDL_RenderFillRect(renderer, &boardBack);
+	//Print win cons (These are stored seperately)	
+	for(int i = 0; i < room->wincon.size(); i++){
+		const auto& coord = room->wincon[i];
+		drawWinBlock(coord.second * blockSize, coord.first * blockSize , blockSize, blockSize, room->block_sheet);
+	}	
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){
@@ -34,7 +47,7 @@ void drawExRoom(ExRoom* room){
 				drawWall(j * blockSize, i * blockSize, blockSize, blockSize);
 			}else if(room->board[i][j] == 1){
 				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
-			}
+			} //Else draw none (0, 4)
 		}
 	}
 }
@@ -147,5 +160,16 @@ void updateExRoom(ExRoom* room, int key){
 		case 4:
 			movePlayer(room, player_pos, {0, 1});
 			break;
+	}
+	//Check if win condition is met
+	bool flag = true;
+	for(int i = 0; i < room->wincon.size(); i++){
+		const auto& coord = room->wincon[i];
+		if(!(room->board[coord.first][coord.second] == 1)){
+			flag = false;
+		}
+	}	
+	if(flag){
+		printf("You won!\n");
 	}
 }

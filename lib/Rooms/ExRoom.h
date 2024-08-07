@@ -5,11 +5,13 @@
 #include "../Objects/Player.h"
 #include "../Objects/Block.h"
 #include "../Objects/Wall.h"
+#include "../Objects/WinBlock.h"
 
 struct ExRoom {
     SDL_Texture* background;
 	SDL_Texture* block_sheet;
 	std::vector<std::vector<int>> board;
+	std::vector<std::pair<int, int>> wincon;
 	int width;
 	int height;
 }; 
