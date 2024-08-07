@@ -8,6 +8,7 @@
 
 struct ExRoom {
     SDL_Texture* background;
+	SDL_Texture* block_sheet;
 	std::vector<std::vector<int>> board;
 	int width;
 	int height;

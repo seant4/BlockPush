@@ -13,6 +13,8 @@ typedef pair<int, int> Position;
 void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp){
 	const char *dir = "./assets/sprites/background.bmp";
     room->background = createTexture(dir);
+	const char *dir2 = "./assets/sprites/block_sheet.bmp";
+	room->block_sheet = createTexture(dir2);
 	room->height = height;
 	room->width = width;
 	room->board = temp;
@@ -21,14 +23,17 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 void drawExRoom(ExRoom* room){
 	int blockSize = 50;
     SDL_RenderCopy(renderer, room->background, NULL, NULL);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	SDL_Rect boardBack = {0,0,room->width * 50, room->height * 50};
+	SDL_RenderFillRect(renderer, &boardBack);
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){
-				drawPlayer(j * blockSize, i * blockSize, blockSize, blockSize);
+				drawPlayer(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 3){
 				drawWall(j * blockSize, i * blockSize, blockSize, blockSize);
 			}else if(room->board[i][j] == 1){
-				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize);
+				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
 			}
 		}
 	}

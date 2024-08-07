@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Wall.h"
 #include <vector>
+#include <SDL2/SDL.h>
 
 struct Block{
 	int x; //X pos
@@ -10,5 +11,5 @@ struct Block{
 	int h; //Height	
 };
 
-void drawBlock(int x, int y, int w, int h);
-void updateBlock(Block* b, int key, Player* p, std::vector<Wall> walls);
+void drawBlock(int x, int y, int w, int h, SDL_Texture* texture);
+void updateBlock(Block* b, int key);
