@@ -8,9 +8,16 @@
 
 #include "./Rooms/ExRoom.h"
 
-void loadLevel(std::string dir, std::vector<std::vector<int>>& temp){
+
+/* Loads level from .txt file
+ *
+ * @param
+ * std::string path: Path to level file
+ * std::vector<std::vector<int>>& temp: vector matrix to apply level too
+ */
+void loadLevel(std::string path, std::vector<std::vector<int>>& temp){
 	std::ifstream in;
-	in.open(dir);
+	in.open(path);
 	std::string line;
 	int i = 0;
 	while(getline(in, line)){
@@ -26,7 +33,13 @@ void loadLevel(std::string dir, std::vector<std::vector<int>>& temp){
 	}
 	in.close();
 }
-//TODO: Custom path
+
+/* Instantiates a room
+ *
+ * @param
+ * Manager* manager: Room manager object
+ * std::string path: Path to level file
+ */
 void loadRoom(Manager* manager, std::string path){
 	std::vector<std::vector<int>> map;
 	loadLevel(path, map);
@@ -36,6 +49,13 @@ void loadRoom(Manager* manager, std::string path){
 	createExRoom(&(manager->exroom),width, height, map);
 }
 
+
+/* Update loop (game logic loop)
+ *
+ * @param
+ * Manager* manager: Room manager object
+ * int key: User input key binding
+ */
 void updateManager(Manager* manager, int key){
 	int state = updateExRoom(&(manager->exroom), key);
 	if(state == 2){
@@ -46,10 +66,20 @@ void updateManager(Manager* manager, int key){
 
 }
 
+/* Manager create event
+ *
+ * @param
+ * Manager* manager: Room manager object
+ */
 void createManager(Manager* manager){
 	loadRoom(manager, "./lib/Levels/lvl2.txt");
 }
 
+/* Manager draw event
+ *
+ * @param
+ * Manager* manager: Room manager object
+ */
 void drawManager(Manager* manager){
 	if(roomState == 1){
 		drawExRoom(&(manager->exroom));

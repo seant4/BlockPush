@@ -1,3 +1,7 @@
+/* Instantiates and manages logic related to the game board and
+ * board levels
+ */
+
 #include "ExRoom.h"
 #include <vector>
 #include <iostream>
@@ -8,8 +12,17 @@
 #include "../Objects/Player.h"
 using namespace std;
 
+/* Position used in BFS search for edges and nodes */
 typedef pair<int, int> Position;
 
+/* Instantiates objects used in a given room
+ *
+ * @param
+ * ExRoom* room: Room object
+ * int width: width of the game board
+ * int height: height of the game board
+ * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
+ */
 void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp){
 	const char *dir = "./assets/sprites/background.bmp";
     room->background = createTexture(dir);
@@ -28,6 +41,11 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 	}
 }
 
+/* Draws objects within the room
+ *
+ * @param
+ * ExRoom* room: Room object
+ */
 void drawExRoom(ExRoom* room){
 	int blockSize = 50;
     SDL_RenderCopy(renderer, room->background, NULL, NULL);
@@ -54,7 +72,17 @@ void drawExRoom(ExRoom* room){
 	}
 }
 
-
+/* BFS algorithm to find connections between the player object and 
+ * block objects
+ *
+ * @param
+ * ExRoom* room: Room object
+ * const Position& start_pos: Starting position of bfs
+ *
+ * @return
+ * 2d vector containing the positions of all blocks connected 
+ * 	through eachother to the player
+ */
 vector<Position> findGroup(ExRoom* room, const Position& start_pos){
 	vector<Position> group;
 	vector<vector<bool>> visited(room->height, vector<bool>(room->width, false));
@@ -84,6 +112,17 @@ vector<Position> findGroup(ExRoom* room, const Position& start_pos){
 	return group;
 }
 
+/* Moves a given block group in some direction
+ *
+ * @param:
+ * ExRoom* room: Room object
+ * const vector<Position>& block_group: Vector of positions of all blocks in a group
+ * 	(typically found by findGroup)
+ * const Position& direction: Direction vector in which to move
+ *
+ * @return:
+ * boolean: successful or unsuccessful move
+ */
 bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position& direction){
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
@@ -113,6 +152,16 @@ bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position
 	return true;
 }
 
+/* Moves player around the room
+ *
+ * @param
+ * ExRoom* room: Room object
+ * Position& player_pos: Players current position
+ * const Position& direction: Direction to move
+ *
+ * @return
+ * boolean: Successful or unsuccessful move
+ */
 bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
 	Position new_player_pos = {player_pos.first	+ direction.first, player_pos.second + direction.second};
 	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
@@ -140,7 +189,15 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
 }
 
 
-
+/* Update and checks room logic
+ *
+ * @param
+ * ExRoom* room: Room object
+ * int key: Key press binding
+ *
+ * @return
+ * int: State of the room
+ */
 /* Key:
  * 1 = up
  * 2 = down
