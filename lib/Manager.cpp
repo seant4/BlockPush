@@ -11,7 +11,19 @@ void updateManager(Manager* manager, int key){
 }
 
 void createManager(Manager* manager){
-	createExRoom(&(manager->exroom));
+
+	int width = 12;
+	int height = 6;
+
+	std::vector<std::vector<int>> map = {
+		{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+		{3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+		{3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3},
+		{3, 0, 1, 2, 0, 3, 0, 0, 0, 1, 0, 3},
+		{3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
+		{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
+	};
+	createExRoom(&(manager->exroom),width, height, map);
 }
 
 void drawManager(Manager* manager){

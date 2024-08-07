@@ -9,11 +9,12 @@
 
 struct ExRoom {
     SDL_Texture* background;
-	int board[6][12];
+	std::vector<std::vector<int>> board;
 	int width;
 	int height;
 }; 
 
-void createExRoom(ExRoom* room);
+
+void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp);
 void updateExRoom(ExRoom* room, int key);
 void drawExRoom(ExRoom* room);

@@ -11,36 +11,24 @@ using namespace std;
 
 typedef pair<int, int> Position;
 
-void createExRoom(ExRoom* room){
+void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp){
     room->background = createTexture("./assets/sprites/background.bmp");
-	room->width = 12;
-	room->height = 6;
-
-	int temp[6][12] = {
-		{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-		{3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-		{3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3},
-		{3, 0, 1, 2, 0, 3, 0, 0, 0, 1, 0, 3},
-		{3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-		{3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}
-	};
-	for(int i = 0; i < 6; i++){
-		for(int j = 0; j < 12; j++){
-			room->board[i][j] = temp[i][j];
-		}
-	}
+	room->height = height;
+	room->width = width;
+	room->board = temp;
 }
 
 void drawExRoom(ExRoom* room){
+	int blockSize = 50;
     SDL_RenderCopy(renderer, room->background, NULL, NULL);
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){
-				drawPlayer(j * 100, i * 100, 100, 100);
+				drawPlayer(j * blockSize, i * blockSize, blockSize, blockSize);
 			}else if(room->board[i][j] == 3){
-				drawWall(j * 100, i * 100, 100, 100);
+				drawWall(j * blockSize, i * blockSize, blockSize, blockSize);
 			}else if(room->board[i][j] == 1){
-				drawBlock(j * 100, i * 100, 100, 100);
+				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize);
 			}
 		}
 	}
@@ -90,8 +78,6 @@ bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position
 	for(size_t i = 0; i < block_group.size(); i++){
 		const auto& old_pos = block_group[i];
 		const auto& new_pos = new_positions[i];
-	//	room->board[old_pos.first][old_pos.second] = 0;
-	//	room->board[new_pos.first][new_pos.second] = 1;
 	}
 	for(size_t i = 0; i < block_group.size(); i++){
 		const auto& old_pos = block_group[i];
