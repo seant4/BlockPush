@@ -72,6 +72,8 @@ int main(int argc, char* args[]){
 						case SDLK_RIGHT:
 							updateManager(&manager, 4);
 							break;
+						case SDLK_r:
+							updateManager(&manager, 5);
 					}
 				}
         	}

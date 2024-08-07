@@ -19,5 +19,5 @@ struct ExRoom {
 
 
 void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp);
-void updateExRoom(ExRoom* room, int key);
+int updateExRoom(ExRoom* room, int key);
 void drawExRoom(ExRoom* room);

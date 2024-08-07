@@ -26,18 +26,28 @@ void loadLevel(std::string dir, std::vector<std::vector<int>>& temp){
 	}
 	in.close();
 }
-
-void updateManager(Manager* manager, int key){
-	updateExRoom(&(manager->exroom), key);
-}
-
-void createManager(Manager* manager){
+//TODO: Custom path
+void loadRoom(Manager* manager, std::string path){
 	std::vector<std::vector<int>> map;
-	loadLevel("./lib/Levels/lvl2.txt", map);
+	loadLevel(path, map);
 	int width = map[0].size();
 	int height = map.size();
 
 	createExRoom(&(manager->exroom),width, height, map);
+}
+
+void updateManager(Manager* manager, int key){
+	int state = updateExRoom(&(manager->exroom), key);
+	if(state == 2){
+		loadRoom(manager, "./lib/Levels/lvl1.txt");
+	}else if(state == 3){
+		loadRoom(manager, "./lib/Levels/lvl2.txt");
+	}
+
+}
+
+void createManager(Manager* manager){
+	loadRoom(manager, "./lib/Levels/lvl2.txt");
 }
 
 void drawManager(Manager* manager){

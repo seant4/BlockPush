@@ -147,7 +147,12 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
  * 3 = left
  * 4 = right
  */
-void updateExRoom(ExRoom* room, int key){
+/* Returns:
+ * 1 = No change
+ * 2 = Beat level
+ * 3 = Reset level
+ */
+int updateExRoom(ExRoom* room, int key){
 	Position player_pos;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
@@ -169,6 +174,9 @@ void updateExRoom(ExRoom* room, int key){
 		case 4:
 			movePlayer(room, player_pos, {0, 1});
 			break;
+		case 5:
+			return 3;
+			break;
 	}
 	//Check if win condition is met
 	bool flag = true;
@@ -179,6 +187,7 @@ void updateExRoom(ExRoom* room, int key){
 		}
 	}	
 	if(flag){
-		printf("You won!\n");
+		return 2;
 	}
+	return 1;
 }
