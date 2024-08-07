@@ -6,13 +6,13 @@
 #include "../../renderer.h"
 #include "../Modules/Visuals/createTexture.h"
 #include "../Objects/Player.h"
-#include "../Objects/Grid.h"
 using namespace std;
 
 typedef pair<int, int> Position;
 
 void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp){
-    room->background = createTexture("./assets/sprites/background.bmp");
+	const char *dir = "./assets/sprites/background.bmp";
+    room->background = createTexture(dir);
 	room->height = height;
 	room->width = width;
 	room->board = temp;

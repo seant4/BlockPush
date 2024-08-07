@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include "../../../renderer.h"
 
-SDL_Texture* createTexture(char* p){
+SDL_Texture* createTexture(const char* p){
     SDL_Surface* image = SDL_LoadBMP(p);
 	if(image == NULL){
 		printf("Image could not be loaded: %s\n", SDL_GetError());
