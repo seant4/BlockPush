@@ -59,9 +59,10 @@ void loadRoom(Manager* manager, std::string path){
 void updateManager(Manager* manager, int key){
 	int state = updateExRoom(&(manager->exroom), key);
 	if(state == 2){
-		loadRoom(manager, "./lib/Levels/lvl1.txt");
+		manager->currentBoard = "./lib/Levels/lvl1.txt";
+		loadRoom(manager, manager->currentBoard);
 	}else if(state == 3){
-		loadRoom(manager, "./lib/Levels/lvl2.txt");
+		loadRoom(manager, manager->currentBoard);
 	}
 
 }
@@ -72,7 +73,8 @@ void updateManager(Manager* manager, int key){
  * Manager* manager: Room manager object
  */
 void createManager(Manager* manager){
-	loadRoom(manager, "./lib/Levels/lvl2.txt");
+	manager->currentBoard = "./lib/Levels/lvl2.txt";
+	loadRoom(manager, manager->currentBoard);
 }
 
 /* Manager draw event

@@ -6,6 +6,7 @@
 
 struct Manager{
 	ExRoom exroom;
+	std::string currentBoard;
 	int n;
 };
 

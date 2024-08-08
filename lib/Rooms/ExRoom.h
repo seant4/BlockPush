@@ -15,6 +15,7 @@ struct ExRoom {
 	std::vector<std::pair<int, int>> wincon;
 	int width;
 	int height;
+	int scrollingOffset; //For scrolling background
 }; 
 
 

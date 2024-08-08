@@ -31,6 +31,7 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 	room->height = height;
 	room->width = width;
 	room->board = temp;
+	room->scrollingOffset = 0;
 	//Find win condition tiles
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -47,26 +48,37 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
  * ExRoom* room: Room object
  */
 void drawExRoom(ExRoom* room){
+	//Initialize local parameters
 	int blockSize = 50;
-    SDL_RenderCopy(renderer, room->background, NULL, NULL);
+	int yOffset = 30;
+	int xOffset = 50;
+
+	//Render background
+	SDL_Rect dstrect = {room->scrollingOffset, 0, 1280, 720};
+	SDL_RenderCopy(renderer, room->background, NULL, &dstrect);
+	dstrect.x += 1280;
+	dstrect.x += 25;
+    SDL_RenderCopy(renderer, room->background, NULL, &dstrect);
+
+	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_Rect boardBack = {0,0,room->width * 50, room->height * 50};
+	SDL_Rect boardBack = {yOffset,xOffset,room->width * 50, room->height * 50};
 	SDL_RenderFillRect(renderer, &boardBack);
 	//Print win cons (These are stored seperately)	
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
-		drawWinBlock(coord.second * blockSize, coord.first * blockSize , blockSize, blockSize, room->block_sheet);
+		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
 	}	
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player
-				drawPlayer(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+				drawPlayer((j * blockSize)+ yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 3){ //Wall
-				drawWall(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+				drawWall((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 1){ //Moveable block
-				drawBlock(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 5){ //Border
-				drawBorder(j * blockSize, i * blockSize, blockSize, blockSize, room->block_sheet);
+				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}
 		}
 	}
@@ -210,6 +222,12 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
  * 3 = Reset level
  */
 int updateExRoom(ExRoom* room, int key){
+
+	--(room->scrollingOffset);
+	if(room->scrollingOffset < -1280){
+		room->scrollingOffset = 0;
+	}
+	//Update moving background
 	Position player_pos;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){

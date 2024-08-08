@@ -38,11 +38,12 @@ int main(int argc, char* args[]){
 	unsigned int a = SDL_GetTicks();
 	unsigned int b = SDL_GetTicks();
 	double delta = 0;
-	double framerate = 30.0; //Set framerate here
+	double framerate = 60.0; //Set framerate here
     renderer = initRender(window);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	SDL_RenderSetLogicalSize(renderer, 1280, 720);
+	SDL_RenderSetVSync(renderer, 1);
     bool quit = false;
     SDL_Event e;
 	//Typically set up room manager here
@@ -53,6 +54,7 @@ int main(int argc, char* args[]){
 		delta = a - b;
 		if(delta > 1000/framerate){
 			b=a;
+		//	printf("%d\n", b);
 			while(SDL_PollEvent(&e) != 0){
             	if(e.type==SDL_QUIT){
                 	quit = true;
