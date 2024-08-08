@@ -1,3 +1,4 @@
 debug/
 app.o
 ./assets/map_proj
+gmon.out
