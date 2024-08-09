@@ -85,6 +85,7 @@ void drawBoard(Board* room){
 		const auto& coord = room->wincon[i];
 		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
 	}
+	//Get draw pos of every block on the board (used for finding connections between blocks
 	std::vector<std::vector<int>> blocks;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
@@ -157,8 +158,9 @@ vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const P
 
 
 vector<Position> findGroup(Board* room, const Position& start_pos, int type){
-	//return(boardBFS(room->board,1,start_pos)); 
-	
+	return(boardBFS(room->board,1,start_pos)); 
+	//Currently keeping this as the seperate function may be buggy, needs more testing
+	/*	
 	vector<Position> group;
 	vector<vector<bool>> visited(room->height, vector<bool>(room->width, false));
 	queue<Position> to_visit;
@@ -185,6 +187,7 @@ vector<Position> findGroup(Board* room, const Position& start_pos, int type){
 		}
 	}
 	return group;
+	*/
 }
 
 /* Moves a given block group in some direction
@@ -198,6 +201,7 @@ vector<Position> findGroup(Board* room, const Position& start_pos, int type){
  * @return:
  * boolean: successful or unsuccessful move
  */
+//TODO: Update to take more bock types
 bool moveGroup(Board* room, const vector<Position>& block_group, const Position& direction){
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
@@ -270,7 +274,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
  */
 
 /* Update and checks room logic
- *
  * @param
  * Board* room: Room object
  * int key: Key press binding
