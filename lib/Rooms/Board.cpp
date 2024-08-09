@@ -2,7 +2,7 @@
  * board levels
  */
 
-#include "ExRoom.h"
+#include "Board.h"
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -10,6 +10,7 @@
 #include "../../renderer.h"
 #include "../Modules/Visuals/createTexture.h"
 #include "../Objects/Player.h"
+
 using namespace std;
 
 /* Position used in BFS search for edges and nodes */
@@ -18,12 +19,12 @@ typedef pair<int, int> Position;
 /* Instantiates objects used in a given room
  *
  * @param
- * ExRoom* room: Room object
+ * Board* room: Room object
  * int width: width of the game board
  * int height: height of the game board
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
-void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<int>> temp){
+void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp){
 	const char *dir = "./assets/sprites/background.bmp";
     room->background = createTexture(dir);
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
@@ -32,6 +33,7 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 	room->width = width;
 	room->board = temp;
 	room->scrollingOffset = 0;
+	room->laser.dist = 0;
 	//Find win condition tiles
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -40,14 +42,29 @@ void createExRoom(ExRoom* room, int width, int height, std::vector<std::vector<i
 			}
 		}
 	}
+
+	for(int i = 0; i < room->height; i++){
+		for(int j = 0; j < room->width; j++){
+			if(room->board[i][j] == 2){ //Player
+			}else if(room->board[i][j] == 3){ //Wall
+			}else if(room->board[i][j] == 1){ //Moveable block
+			}else if(room->board[i][j] == 5){ //Border
+			}else if(room->board[i][j] == 6){ //Vertical Laser
+				room->laser.x = j;
+				room->laser.y = i;
+				room->laser.orientation = 0;
+				room->laser.dist = 0;
+			}
+		}
+	}
 }
 
 /* Draws objects within the room
  *
  * @param
- * ExRoom* room: Room object
+ * Board* room: Room object
  */
-void drawExRoom(ExRoom* room){
+void drawBoard(Board* room){
 	//Initialize local parameters
 	int blockSize = 50;
 	int yOffset = 30;
@@ -79,6 +96,8 @@ void drawExRoom(ExRoom* room){
 				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
+			}else if(room->board[i][j] == 6){ //Vertical Laser
+				drawLaser(&(room->laser), (j * blockSize)+yOffset, (i * blockSize) + xOffset);
 			}
 		}
 	}
@@ -88,14 +107,14 @@ void drawExRoom(ExRoom* room){
  * block objects
  *
  * @param
- * ExRoom* room: Room object
+ * Board* room: Room object
  * const Position& start_pos: Starting position of bfs
  *
  * @return
  * 2d vector containing the positions of all blocks connected 
  * 	through eachother to the player
  */
-vector<Position> findGroup(ExRoom* room, const Position& start_pos){
+vector<Position> findGroup(Board* room, const Position& start_pos, int type){
 	vector<Position> group;
 	vector<vector<bool>> visited(room->height, vector<bool>(room->width, false));
 	queue<Position> to_visit;
@@ -115,7 +134,7 @@ vector<Position> findGroup(ExRoom* room, const Position& start_pos){
 		vector<Position> directions = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 		for(const auto& dir: directions){
 			Position next_pos = {pos.first + dir.first, pos.second + dir.second};
-			if(room->board[next_pos.first][next_pos.second] == 1 &&
+			if(room->board[next_pos.first][next_pos.second] == type &&
 					!visited[next_pos.first][next_pos.second]){
 				to_visit.push(next_pos);
 			}
@@ -127,7 +146,7 @@ vector<Position> findGroup(ExRoom* room, const Position& start_pos){
 /* Moves a given block group in some direction
  *
  * @param:
- * ExRoom* room: Room object
+ * Board* room: Room object
  * const vector<Position>& block_group: Vector of positions of all blocks in a group
  * 	(typically found by findGroup)
  * const Position& direction: Direction vector in which to move
@@ -135,7 +154,7 @@ vector<Position> findGroup(ExRoom* room, const Position& start_pos){
  * @return:
  * boolean: successful or unsuccessful move
  */
-bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position& direction){
+bool moveGroup(Board* room, const vector<Position>& block_group, const Position& direction){
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
 		Position new_pos = {pos.first + direction.first, pos.second + direction.second};
@@ -167,20 +186,21 @@ bool moveGroup(ExRoom* room, const vector<Position>& block_group, const Position
 /* Moves player around the room
  *
  * @param
- * ExRoom* room: Room object
+ * Board* room: Room object
  * Position& player_pos: Players current position
  * const Position& direction: Direction to move
  *
  * @return
  * boolean: Successful or unsuccessful move
  */
-bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
+bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 	Position new_player_pos = {player_pos.first	+ direction.first, player_pos.second + direction.second};
 	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
 		return false;
 	}
+	//TODO: Update to take block type (more block types in future)
 	if(room->board[new_player_pos.first][new_player_pos.second] == 1){
-		vector<Position> block_group = findGroup(room, new_player_pos);
+		vector<Position> block_group = findGroup(room, new_player_pos, 1);
 		if(!(moveGroup(room, block_group, direction))){
 			return false;
 		}
@@ -204,7 +224,7 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
 /* Update and checks room logic
  *
  * @param
- * ExRoom* room: Room object
+ * Board* room: Room object
  * int key: Key press binding
  *
  * @return
@@ -221,8 +241,8 @@ bool movePlayer(ExRoom* room, Position& player_pos, const Position& direction){
  * 2 = Beat level
  * 3 = Reset level
  */
-int updateExRoom(ExRoom* room, int key){
-
+int updateBoard(Board* room, int key){
+	updateLaser(&(room->laser), room->board);
 	--(room->scrollingOffset);
 	if(room->scrollingOffset < -1280){
 		room->scrollingOffset = 0;

@@ -2,10 +2,10 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
-#include "./Rooms/ExRoom.h"
+#include "./Rooms/Board.h"
 
 struct Manager{
-	ExRoom exroom;
+	Board board;
 	std::string currentBoard;
 	int n;
 };

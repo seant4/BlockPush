@@ -61,7 +61,7 @@ int main(int argc, char* args[]){
             	}
 				//Handle user input here via SDL2 input handler, send this to manager
 				if(e.type==SDL_KEYDOWN){
-					switch(e.key.keysym.sym){
+					switch(e.key.keysym.sym){ //IDK if this is optimal or if it even makes sense
 						case SDLK_UP:
 							updateManager(&manager, 1);
 							break;

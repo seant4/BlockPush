@@ -6,7 +6,7 @@
 #include "../renderer.h"
 #include "roomstate.h"
 
-#include "./Rooms/ExRoom.h"
+#include "./Rooms/Board.h"
 
 
 /* Loads level from .txt file
@@ -34,19 +34,19 @@ void loadLevel(std::string path, std::vector<std::vector<int>>& temp){
 	in.close();
 }
 
-/* Instantiates a room
+/* Instantiates a board
  *
  * @param
  * Manager* manager: Room manager object
  * std::string path: Path to level file
  */
-void loadRoom(Manager* manager, std::string path){
+void loadBoard(Manager* manager, std::string path){
 	std::vector<std::vector<int>> map;
 	loadLevel(path, map);
 	int width = map[0].size();
 	int height = map.size();
 
-	createExRoom(&(manager->exroom),width, height, map);
+	createBoard(&(manager->board),width, height, map);
 }
 
 
@@ -57,12 +57,12 @@ void loadRoom(Manager* manager, std::string path){
  * int key: User input key binding
  */
 void updateManager(Manager* manager, int key){
-	int state = updateExRoom(&(manager->exroom), key);
+	int state = updateBoard(&(manager->board), key);
 	if(state == 2){
 		manager->currentBoard = "./lib/Levels/lvl1.txt";
-		loadRoom(manager, manager->currentBoard);
+		loadBoard(manager, manager->currentBoard);
 	}else if(state == 3){
-		loadRoom(manager, manager->currentBoard);
+		loadBoard(manager, manager->currentBoard);
 	}
 
 }
@@ -74,7 +74,7 @@ void updateManager(Manager* manager, int key){
  */
 void createManager(Manager* manager){
 	manager->currentBoard = "./lib/Levels/lvl2.txt";
-	loadRoom(manager, manager->currentBoard);
+	loadBoard(manager, manager->currentBoard);
 }
 
 /* Manager draw event
@@ -84,7 +84,7 @@ void createManager(Manager* manager){
  */
 void drawManager(Manager* manager){
 	if(roomState == 1){
-		drawExRoom(&(manager->exroom));
+		drawBoard(&(manager->board));
 	}else{
 	}
 }
