@@ -221,6 +221,35 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 }
 
 
+/* Checks where new connections are made (For visual signal)
+ *
+ */
+
+void newConnections(std::vector<std::vector<int>> prev, std::vector<std::vector<int>> next){
+	int adj = 0;
+	for(int i = 0; i < prev.size(); i++){
+		for(int j = 0; j < prev[i].size(); j++){
+			if(prev[i][j] == 0 && next[i][j] == 1){
+				if(prev[i+1][j] == 1){
+					adj++;
+				}if(prev[i-1][j] == 1){
+					adj++;
+				}if(prev[i][j+1] == 1){
+					adj++;
+				}if(prev[i][j-1] == 1){
+					adj++;
+				}
+				if(adj >= 2){
+					printf("New connection made");
+				}else{
+					adj = 0;
+				}
+			}
+		}
+	}
+}
+
+
 /* Update and checks room logic
  *
  * @param
@@ -242,6 +271,7 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
  * 3 = Reset level
  */
 int updateBoard(Board* room, int key){
+	std::vector<std::vector<int>> previous = room->board;
 	--(room->scrollingOffset);
 	if(room->scrollingOffset < -1280){
 		room->scrollingOffset = 0;
