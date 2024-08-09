@@ -12,4 +12,4 @@ struct Laser{
 };
 
 void drawLaser(Laser *laser, int x, int y);
-void updateLaser(Laser *laser, std::vector<std::vector<int>> board);
+bool updateLaser(Laser *laser, std::vector<std::vector<int>> board);

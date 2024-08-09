@@ -14,9 +14,12 @@ void drawLaser(Laser *laser, int x, int y){
 	SDL_RenderFillRect(renderer, &dstrect);
 	//SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
 }
-void updateLaser(Laser *laser, std::vector<std::vector<int>> board){
+bool updateLaser(Laser *laser, std::vector<std::vector<int>> board){
 	if(laser->orientation == 0){
 		for(int i = 0; i < board.size(); i++){
+			if(board[i][laser->x] == 2){
+				return true;
+			}
 			if(board[i][laser->x] == 1 || board[i][laser->x] == 5 || board[i][laser->x] == 3){
 				laser->height = (i * 50) - 1;
 				break;
@@ -24,11 +27,14 @@ void updateLaser(Laser *laser, std::vector<std::vector<int>> board){
 		}
 	}else{
 		for(int i = 0; i < board[0].size(); i++){
+			if(board[laser->y][i] == 2){
+				return true;
+			}
 			if(board[laser->y][i] == 1 || board[laser->y][i] == 5 || board[laser->y][i] == 3){
 				laser->width = (i * 50) - 1;
 				break;
 			}
 		}
 	}
-
+	return false;
 }

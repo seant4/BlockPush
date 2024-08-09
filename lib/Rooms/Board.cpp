@@ -242,7 +242,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
  * 3 = Reset level
  */
 int updateBoard(Board* room, int key){
-	updateLaser(&(room->laser), room->board);
 	--(room->scrollingOffset);
 	if(room->scrollingOffset < -1280){
 		room->scrollingOffset = 0;
@@ -256,6 +255,9 @@ int updateBoard(Board* room, int key){
 			}
 		}
 	}
+
+	bool flag = true;
+	//Wincon checking theoretically doesnt need to happen unless the player moves (refactor this)
 	switch(key){
 		case 1:
 			movePlayer(room, player_pos, {-1,0});
@@ -273,8 +275,10 @@ int updateBoard(Board* room, int key){
 			return 3;
 			break;
 	}
-	//Check if win condition is met
-	bool flag = true;
+
+	if(updateLaser(&(room->laser), room->board)){
+		return 3;
+	}
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
 		if(!(room->board[coord.first][coord.second] == 1)){
