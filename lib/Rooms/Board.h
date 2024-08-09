@@ -14,6 +14,7 @@ struct Board {
 	SDL_Texture* block_sheet;
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
+	std::vector<Block> blocks;
 	Laser laser;
 	int width;
 	int height;

@@ -69,7 +69,6 @@ void drawBoard(Board* room){
 	int blockSize = 50;
 	int yOffset = 30;
 	int xOffset = 50;
-
 	//Render background
 	SDL_Rect dstrect = {room->scrollingOffset, 0, 1280, 720};
 	SDL_RenderCopy(renderer, room->background, NULL, &dstrect);
@@ -85,7 +84,15 @@ void drawBoard(Board* room){
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
 		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
-	}	
+	}
+	std::vector<std::vector<int>> blocks;
+	for(int i = 0; i < room->height; i++){
+		for(int j = 0; j < room->width; j++){
+			if(room->board[i][j] == 1){
+				blocks.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
+			}
+		}
+	}
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player
@@ -93,7 +100,7 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 3){ //Wall
 				drawWall((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 1){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks);
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser
@@ -101,6 +108,7 @@ void drawBoard(Board* room){
 			}
 		}
 	}
+			
 }
 
 /* BFS algorithm to find connections between the player object and 
@@ -112,9 +120,45 @@ void drawBoard(Board* room){
  *
  * @return
  * 2d vector containing the positions of all blocks connected 
- * 	through eachother to the player
+ * 	through eachother to the player (or some starting position)
  */
+
+
+vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const Position& start_pos){
+	vector<Position> group;
+	vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(), false));
+	queue<Position> to_visit;
+	to_visit.push(start_pos);
+
+	while(!to_visit.empty()){
+		Position pos = to_visit.front();
+		to_visit.pop();
+
+		if(visited[pos.first][pos.second]){
+			continue;
+		}
+
+		visited[pos.first][pos.second] = true;
+		group.push_back(pos);
+
+		vector<Position> directions = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+		for(const auto& dir: directions){
+			Position next_pos = {pos.first + dir.first, pos.second + dir.second};
+			if(board[next_pos.first][next_pos.second] == type &&
+					!visited[next_pos.first][next_pos.second]){
+				to_visit.push(next_pos);
+			}
+		}
+	}
+	return group;
+}
+
+
+
+
 vector<Position> findGroup(Board* room, const Position& start_pos, int type){
+	//return(boardBFS(room->board,1,start_pos)); 
+	
 	vector<Position> group;
 	vector<vector<bool>> visited(room->height, vector<bool>(room->width, false));
 	queue<Position> to_visit;
@@ -225,31 +269,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
  *
  */
 
-void newConnections(std::vector<std::vector<int>> prev, std::vector<std::vector<int>> next){
-	int adj = 0;
-	for(int i = 0; i < prev.size(); i++){
-		for(int j = 0; j < prev[i].size(); j++){
-			if(prev[i][j] == 0 && next[i][j] == 1){
-				if(prev[i+1][j] == 1){
-					adj++;
-				}if(prev[i-1][j] == 1){
-					adj++;
-				}if(prev[i][j+1] == 1){
-					adj++;
-				}if(prev[i][j-1] == 1){
-					adj++;
-				}
-				if(adj >= 2){
-					printf("New connection made");
-				}else{
-					adj = 0;
-				}
-			}
-		}
-	}
-}
-
-
 /* Update and checks room logic
  *
  * @param
@@ -287,7 +306,6 @@ int updateBoard(Board* room, int key){
 	}
 
 	bool flag = true;
-	//Wincon checking theoretically doesnt need to happen unless the player moves (refactor this)
 	switch(key){
 		case 1:
 			movePlayer(room, player_pos, {-1,0});

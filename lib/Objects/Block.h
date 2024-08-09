@@ -9,7 +9,8 @@ struct Block{
 	int y; //Y pos
 	int w; //Width
 	int h; //Height	
+	int cols; //Collisions
 };
 
-void drawBlock(int x, int y, int w, int h, SDL_Texture* texture);
-void updateBlock(Block* b, int key);
+void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, std::vector<std::vector<int>> blocks);
+void updateBlock(Block* b);
