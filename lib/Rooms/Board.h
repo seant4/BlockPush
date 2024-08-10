@@ -13,7 +13,8 @@ struct Board {
 	SDL_Texture* block_sheet;
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
-	Laser laser;
+	Laser* lasers;
+	int nlasers;
 	int width;
 	int height;
 	int scrollingOffset; //For scrolling background

@@ -57,6 +57,7 @@ int main(int argc, char* args[]){
 		//	printf("%d\n", b);
 			while(SDL_PollEvent(&e) != 0){
             	if(e.type==SDL_QUIT){
+					updateManager(&manager, 10);
                 	quit = true;
             	}
 				//Handle user input here via SDL2 input handler, send this to manager

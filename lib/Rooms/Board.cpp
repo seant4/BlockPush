@@ -24,13 +24,13 @@ typedef pair<int, int> Position;
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
 void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp){
+	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
 	room->height = height;
 	room->width = width;
 	room->board = temp;
 	room->scrollingOffset = 0;
-	room->laser.dist = 0;
 	//Find win condition tiles
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -46,10 +46,20 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}else if(room->board[i][j] == 1){ //Moveable block
 			}else if(room->board[i][j] == 5){ //Border
 			}else if(room->board[i][j] == 6){ //Vertical Laser
-				room->laser.x = j;
-				room->laser.y = i;
-				room->laser.orientation = 0;
-				room->laser.dist = 0;
+				room->nlasers++;
+			}
+		}
+	}
+	room->lasers = static_cast<Laser*>(malloc(room->nlasers * sizeof(Laser)));
+	int s = 0;
+	for(int i = 0; i < room->height; i++){
+		for(int j = 0; j < room->width; j++){
+			if(room->board[i][j] == 6){ //Vertical Laser
+				room->lasers[s].x = j;
+				room->lasers[s].y = i;
+				room->lasers[s].orientation = 0;
+				room->lasers[s].dist = 0;
+				s++;
 			}
 		}
 	}
@@ -84,6 +94,7 @@ void drawBoard(Board* room){
 			}
 		}
 	}
+	int l = 0;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player
@@ -94,8 +105,12 @@ void drawBoard(Board* room){
 				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks);
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
-			}else if(room->board[i][j] == 6){ //Vertical Laser
-				room->laser.draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+			}else if(room->board[i][j] == 6){ //Vertical Laser		
+				if(room->lasers != NULL){
+					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+					l++;
+				}
+	//			room->laser.draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
 				//drawLaser(&(room->laser), (j * blockSize)+yOffset, (i * blockSize) + xOffset);
 			}
 		}
@@ -287,9 +302,18 @@ int updateBoard(Board* room, int key){
 		case 5:
 			return 3;
 			break;
+		case 10:
+			free(room->lasers);
+			room->lasers = NULL;
+			break;
 	}
-	if(room->laser.update(room->board)){
-		return 3;
+
+	if(room->lasers != NULL){
+		for(int i = 0; i < room->nlasers; i++){
+			if(room->lasers[i].update(room->board)){
+				return 3;
+			}
+		}
 	}
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
