@@ -41,6 +41,7 @@ void loadLevel(std::string path, std::vector<std::vector<int>>& temp){
  * std::string path: Path to level file
  */
 void loadBoard(Manager* manager, std::string path){
+	SDL_RenderClear(renderer);
 	std::vector<std::vector<int>> map;
 	loadLevel(path, map);
 	int width = map[0].size();
