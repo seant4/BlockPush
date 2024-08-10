@@ -86,11 +86,14 @@ void drawBoard(Board* room){
 		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
 	}
 	//Get draw pos of every block on the board (used for finding connections between blocks
-	std::vector<std::vector<int>> blocks;
+	std::vector<std::vector<int>> blocks1;
+	std::vector<std::vector<int>> blocks2;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 1){
-				blocks.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
+				blocks1.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
+			}else if(room->board[i][j] == 8){
+				blocks2.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
 			}
 		}
 	}
@@ -102,7 +105,7 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 3){ //Wall
 				drawWall((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 1){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks);
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks1);
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser		
@@ -110,12 +113,11 @@ void drawBoard(Board* room){
 					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
 					l++;
 				}
-	//			room->laser.draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
-				//drawLaser(&(room->laser), (j * blockSize)+yOffset, (i * blockSize) + xOffset);
+			}else if(room->board[i][j] == 8){ //Moveable block
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks2);
 			}
 		}
 	}
-			
 }
 
 /* BFS algorithm to find connections between the player object and 
@@ -164,7 +166,7 @@ vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const P
 
 
 vector<Position> findGroup(Board* room, const Position& start_pos, int type){
-	return(boardBFS(room->board,1,start_pos)); 
+	return(boardBFS(room->board,type,start_pos)); 
 }
 
 /* Moves a given block group in some direction
@@ -179,12 +181,19 @@ vector<Position> findGroup(Board* room, const Position& start_pos, int type){
  * boolean: successful or unsuccessful move
  */
 //TODO: Update to take more bock types
-bool moveGroup(Board* room, const vector<Position>& block_group, const Position& direction){
+bool moveGroup(Board* room, const vector<Position>& block_group, const Position& direction, int type){
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
 		Position new_pos = {pos.first + direction.first, pos.second + direction.second};
-		if(room->board[new_pos.first][new_pos.second] == 3 || room->board[new_pos.first][new_pos.second] == 5 ||
-				(room->board[new_pos.first][new_pos.second] == 1 &&
+		/*
+		if(room->board[new_pos.first][new_pos.second] == 3 || room->board[new_pos.first][new_pos.second] == 5 || room->board[new_pos.first][new_pos.second] == 6 ||
+				(room->board[new_pos.first][new_pos.second] == type &&
+				 find(block_group.begin(), block_group.end(), new_pos) == block_group.end())) {
+			return false;
+		}
+		*/
+		if(!(room->board[new_pos.first][new_pos.second] == type || room->board[new_pos.first][new_pos.second] == 0 || room->board[new_pos.first][new_pos.second] == 4 || room->board[new_pos.first][new_pos.second] == 2)
+				|| (room->board[new_pos.first][new_pos.second] == type &&
 				 find(block_group.begin(), block_group.end(), new_pos) == block_group.end())) {
 			return false;
 		}
@@ -202,7 +211,7 @@ bool moveGroup(Board* room, const vector<Position>& block_group, const Position&
 	for(size_t i = 0; i < block_group.size(); i++){
 		const auto& old_pos = block_group[i];
 		const auto& new_pos = new_positions[i];
-		room->board[new_pos.first][new_pos.second] = 1;
+		room->board[new_pos.first][new_pos.second] = type ;
 	}
 
 	return true;
@@ -226,10 +235,17 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 	//TODO: Update to take block type (more block types in future)
 	if(room->board[new_player_pos.first][new_player_pos.second] == 1){
 		vector<Position> block_group = findGroup(room, new_player_pos, 1);
-		if(!(moveGroup(room, block_group, direction))){
+		if(!(moveGroup(room, block_group, direction, 1))){
 			return false;
 		}
 	}
+	if(room->board[new_player_pos.first][new_player_pos.second] == 8){
+		vector<Position> block_group = findGroup(room, new_player_pos, 8);
+		if(!(moveGroup(room, block_group, direction, 8))){
+			return false;
+		}
+	}
+
 
 	//Move player
 	if(room->board[player_pos.first][player_pos.second] == 1){
@@ -244,11 +260,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 
 	return true;
 }
-
-
-/* Checks where new connections are made (For visual signal)
- *
- */
 
 /* Update and checks room logic
  * @param
