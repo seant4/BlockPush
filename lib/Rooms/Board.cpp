@@ -39,7 +39,6 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
-
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player

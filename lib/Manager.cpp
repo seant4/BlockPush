@@ -34,6 +34,7 @@ void loadLevel(std::string path, std::vector<std::vector<int>>& temp){
 	in.close();
 }
 
+
 /* Instantiates a board
  *
  * @param
