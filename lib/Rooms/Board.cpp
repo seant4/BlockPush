@@ -185,13 +185,7 @@ bool moveGroup(Board* room, const vector<Position>& block_group, const Position&
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
 		Position new_pos = {pos.first + direction.first, pos.second + direction.second};
-		/*
-		if(room->board[new_pos.first][new_pos.second] == 3 || room->board[new_pos.first][new_pos.second] == 5 || room->board[new_pos.first][new_pos.second] == 6 ||
-				(room->board[new_pos.first][new_pos.second] == type &&
-				 find(block_group.begin(), block_group.end(), new_pos) == block_group.end())) {
-			return false;
-		}
-		*/
+		//TODO: Refactor this
 		if(!(room->board[new_pos.first][new_pos.second] == type || room->board[new_pos.first][new_pos.second] == 0 || room->board[new_pos.first][new_pos.second] == 4 || room->board[new_pos.first][new_pos.second] == 2)
 				|| (room->board[new_pos.first][new_pos.second] == type &&
 				 find(block_group.begin(), block_group.end(), new_pos) == block_group.end())) {
@@ -248,15 +242,15 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 
 
 	//Move player
-	if(room->board[player_pos.first][player_pos.second] == 1){
-		room->board[player_pos.first][player_pos.second] = 1;
-		room->board[new_player_pos.first][new_player_pos.second] = 2;
-		player_pos = new_player_pos;
+	//Update for new block types
+	int prev = 0;
+	if(!( room->board[player_pos.first][player_pos.second] == 2 ||  room->board[player_pos.first][player_pos.second] == 3 || room->board[player_pos.first][player_pos.second] == 4)){
+		prev = room->board[player_pos.first][player_pos.second];
 	}else{
-		room->board[player_pos.first][player_pos.second] = 0;
-		room->board[new_player_pos.first][new_player_pos.second] = 2;
-		player_pos = new_player_pos;
+		prev = 0;
 	}
+	room->board[player_pos.first][player_pos.second] = prev;
+	room->board[new_player_pos.first][new_player_pos.second] = 2;
 
 	return true;
 }
