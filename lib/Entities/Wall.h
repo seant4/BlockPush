@@ -10,6 +10,4 @@ struct Wall{
 		x(xi), y(yi), w(wi), h(hi){}
 };
 
-
 void drawWall(int x, int y, int w, int h, SDL_Texture* texture);
-void updateWall(Wall* w);

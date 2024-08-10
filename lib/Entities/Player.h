@@ -9,4 +9,3 @@ struct Player{
 };
 
 void drawPlayer(int x, int y, int w, int h, SDL_Texture* texture);
-void updatePlayer(Player* p, int key);

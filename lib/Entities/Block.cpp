@@ -1,10 +1,7 @@
 #include "Block.h"
-#include "Player.h"
-#include "Wall.h"
 #include <vector>
 #include <math.h>
 #include "../../renderer.h"
-#include "../Modules/Physics/physics.h"
 #include "../Modules/Visuals/createTexture.h"
 
 void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, std::vector<std::vector<int>> blocks){
@@ -22,7 +19,4 @@ void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, std::vector<std
 					
 		}
 	}
-}
-
-void updateBlock(Block* b){
 }

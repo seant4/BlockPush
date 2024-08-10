@@ -9,7 +9,6 @@
 #include <queue>
 #include "../../renderer.h"
 #include "../Modules/Visuals/createTexture.h"
-#include "../Objects/Player.h"
 
 using namespace std;
 
@@ -25,8 +24,6 @@ typedef pair<int, int> Position;
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
 void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp){
-	const char *dir = "./assets/sprites/background.bmp";
-    room->background = createTexture(dir);
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
 	room->height = height;
@@ -69,12 +66,6 @@ void drawBoard(Board* room){
 	int blockSize = 50;
 	int yOffset = 30;
 	int xOffset = 50;
-	//Render background
-	SDL_Rect dstrect = {room->scrollingOffset, 0, 1280, 720};
-	SDL_RenderCopy(renderer, room->background, NULL, &dstrect);
-	dstrect.x += 1280;
-	dstrect.x += 25;
-    SDL_RenderCopy(renderer, room->background, NULL, &dstrect);
 
 	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -105,7 +96,8 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser
-				drawLaser(&(room->laser), (j * blockSize)+yOffset, (i * blockSize) + xOffset);
+				room->laser.draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+				//drawLaser(&(room->laser), (j * blockSize)+yOffset, (i * blockSize) + xOffset);
 			}
 		}
 	}
@@ -159,35 +151,6 @@ vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const P
 
 vector<Position> findGroup(Board* room, const Position& start_pos, int type){
 	return(boardBFS(room->board,1,start_pos)); 
-	//Currently keeping this as the seperate function may be buggy, needs more testing
-	/*	
-	vector<Position> group;
-	vector<vector<bool>> visited(room->height, vector<bool>(room->width, false));
-	queue<Position> to_visit;
-	to_visit.push(start_pos);
-
-	while(!to_visit.empty()){
-		Position pos = to_visit.front();
-		to_visit.pop();
-
-		if(visited[pos.first][pos.second]){
-			continue;
-		}
-
-		visited[pos.first][pos.second] = true;
-		group.push_back(pos);
-
-		vector<Position> directions = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-		for(const auto& dir: directions){
-			Position next_pos = {pos.first + dir.first, pos.second + dir.second};
-			if(room->board[next_pos.first][next_pos.second] == type &&
-					!visited[next_pos.first][next_pos.second]){
-				to_visit.push(next_pos);
-			}
-		}
-	}
-	return group;
-	*/
 }
 
 /* Moves a given block group in some direction
@@ -326,8 +289,7 @@ int updateBoard(Board* room, int key){
 			return 3;
 			break;
 	}
-
-	if(updateLaser(&(room->laser), room->board)){
+	if(room->laser.update(room->board)){
 		return 3;
 	}
 	for(int i = 0; i < room->wincon.size(); i++){
