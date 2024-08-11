@@ -92,7 +92,7 @@ void updateManager(Manager* manager, int key){
  */
 void createManager(Manager* manager){
 	manager->fader = {255,6,0};
-	manager->currentBoard = 2;
+	manager->currentBoard = 1;
 	changeBoard(manager, manager->currentBoard);
 	manager->boardTrans = false;
 }

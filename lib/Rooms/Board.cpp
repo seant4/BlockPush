@@ -34,6 +34,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->height = height;
 	room->width = width;
 	room->board = temp;
+	room->wincon.clear();
 	//Find win condition tiles
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -55,6 +56,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
+	free(room->lasers);
 	room->lasers = static_cast<Laser*>(malloc(room->nlasers * sizeof(Laser)));
 	int s = 0;
 	for(int i = 0; i < room->height; i++){
