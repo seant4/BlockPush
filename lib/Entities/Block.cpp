@@ -4,8 +4,13 @@
 #include "../../renderer.h"
 #include "../Modules/Visuals/createTexture.h"
 
-void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, std::vector<std::vector<int>> blocks){
-	SDL_Rect srcrect = {100,0,100,100};
+void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, std::vector<std::vector<int>> blocks, int type){
+	SDL_Rect srcrect = {0,0,100,100};
+	if(type == 1){
+		srcrect.x = 100;
+	}else if(type == 8){
+		srcrect.x = 500;
+	}
 	SDL_Rect dstrect = {x,y,w,h};
 	SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
 	for(int i = 0; i < blocks.size(); i++){

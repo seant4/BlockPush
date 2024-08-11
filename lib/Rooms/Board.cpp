@@ -105,7 +105,7 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 3){ //Wall
 				drawWall((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 1){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks1);
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks1, 1);
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser		
@@ -114,7 +114,7 @@ void drawBoard(Board* room){
 					l++;
 				}
 			}else if(room->board[i][j] == 8){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks2);
+				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks2, 8);
 			}
 		}
 	}
