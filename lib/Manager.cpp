@@ -5,7 +5,7 @@
 #include "Manager.h"
 #include "../renderer.h"
 #include "roomstate.h"
-
+#include "./Modules/Visuals/fade.h"
 #include "./Rooms/Board.h"
 
 
@@ -47,10 +47,16 @@ void loadBoard(Manager* manager, std::string path){
 	loadLevel(path, map);
 	int width = map[0].size();
 	int height = map.size();
-
+	manager->overworld.create();
 	createBoard(&(manager->board),width, height, map);
 }
 
+void changeBoard(Manager* manager, int b){
+	manager->fader = {255,6,0};
+	manager->currentBoard = b;
+	std::string path = "./lib/Levels/lvl" + std::to_string(b) + ".txt";
+	loadBoard(manager, path);
+}
 
 /* Update loop (game logic loop)
  *
@@ -59,12 +65,22 @@ void loadBoard(Manager* manager, std::string path){
  * int key: User input key binding
  */
 void updateManager(Manager* manager, int key){
-	int state = updateBoard(&(manager->board), key);
-	if(state == 2){
-		manager->currentBoard = "./lib/Levels/lvl1.txt";
-		loadBoard(manager, manager->currentBoard);
+	bool fadeState = updateFade(&(manager->fader));
+	int state = 0;
+	if(!(manager->boardTrans)){
+		state = updateBoard(&(manager->board), key);
+	}
+	if(state == 2 && manager->boardTrans == false){
+		manager->boardTrans = true;
+		manager->fader = {0,6,1};
+
 	}else if(state == 3){
-		loadBoard(manager, manager->currentBoard);
+		changeBoard(manager, manager->currentBoard);
+	}
+	if(fadeState == true && manager->boardTrans == true){
+		manager->currentBoard++;
+		changeBoard(manager, manager->currentBoard);
+		manager->boardTrans = false;
 	}
 
 }
@@ -75,8 +91,10 @@ void updateManager(Manager* manager, int key){
  * Manager* manager: Room manager object
  */
 void createManager(Manager* manager){
-	manager->currentBoard = "./lib/Levels/lvl3.txt";
-	loadBoard(manager, manager->currentBoard);
+	manager->fader = {255,6,0};
+	manager->currentBoard = 2;
+	changeBoard(manager, manager->currentBoard);
+	manager->boardTrans = false;
 }
 
 /* Manager draw event
@@ -89,5 +107,6 @@ void drawManager(Manager* manager){
 		drawBoard(&(manager->board));
 	}else{
 	}
+	drawFade(&(manager->fader));	
 }
 

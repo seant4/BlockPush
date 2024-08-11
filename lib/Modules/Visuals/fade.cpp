@@ -28,7 +28,7 @@ bool updateFade(Fade* fader) {
 }
 
 void drawFade(Fade* fader){
-	SDL_Rect rect = {0,0,1280,720};
+	SDL_Rect rect = {0,0,1920,1080};
 	SDL_SetRenderDrawColor(renderer,0,0,0,fader->timer);
 	SDL_RenderFillRect(renderer, &rect);
 }
