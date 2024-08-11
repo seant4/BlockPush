@@ -34,7 +34,6 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->height = height;
 	room->width = width;
 	room->board = temp;
-	room->scrollingOffset = 0;
 	//Find win condition tiles
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
@@ -51,6 +50,8 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}else if(room->board[i][j] == 5){ //Border
 			}else if(room->board[i][j] == 6){ //Vertical Laser
 				room->nlasers++;
+			}else if(room->board[i][j] == 7){
+				room->nlasers++;
 			}
 		}
 	}
@@ -62,6 +63,12 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 				room->lasers[s].x = j;
 				room->lasers[s].y = i;
 				room->lasers[s].orientation = 0;
+				room->lasers[s].dist = 0;
+				s++;
+			}else if(room->board[i][j] == 7){ //Vertical Laser
+				room->lasers[s].x = j;
+				room->lasers[s].y = i;
+				room->lasers[s].orientation = 1;
 				room->lasers[s].dist = 0;
 				s++;
 			}
@@ -85,10 +92,10 @@ void drawBoard(Board* room){
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
 
 	//Render character
-	dest.x=800;
+	dest.x=1050;
 	dest.y=50;
-	dest.w = 500;
-	dest.h = 700;
+	dest.w = 250;
+	dest.h = 350;
 	SDL_RenderCopy(renderer, room->character, NULL, &dest);
 
 	//Render back of gameboard
@@ -124,6 +131,11 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser		
+				if(room->lasers != NULL){
+					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+					l++;
+				}
+			}else if(room->board[i][j] == 7){
 				if(room->lasers != NULL){
 					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
 					l++;

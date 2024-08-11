@@ -6,8 +6,8 @@
 #include "./lib/Manager.h"
 #include "renderer.h"
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 
 SDL_Renderer* initRender(SDL_Window* window){
 	//Window initialization
@@ -30,7 +30,7 @@ SDL_Renderer* initRender(SDL_Window* window){
 		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
 	}
 	//Create renderer
-	renderer = SDL_CreateRenderer(window,-1,0);
+	renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	return renderer;
 }
 
