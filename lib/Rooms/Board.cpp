@@ -24,6 +24,10 @@ typedef pair<int, int> Position;
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
 void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp){
+	const char *dir1 = "./assets/sprites/background.bmp";
+	room->background = createTexture(dir1);
+	const char *dir3 = "./assets/sprites/manBig.bmp";
+	room->character = createTexture(dir3);
 	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
@@ -75,6 +79,17 @@ void drawBoard(Board* room){
 	int blockSize = 50;
 	int yOffset = 30;
 	int xOffset = 50;
+
+	//Render background
+	SDL_Rect dest = {0,0,1280,720};
+	SDL_RenderCopy(renderer, room->background, NULL, &dest);
+
+	//Render character
+	dest.x=800;
+	dest.y=50;
+	dest.w = 500;
+	dest.h = 700;
+	SDL_RenderCopy(renderer, room->character, NULL, &dest);
 
 	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

@@ -75,7 +75,7 @@ void updateManager(Manager* manager, int key){
  * Manager* manager: Room manager object
  */
 void createManager(Manager* manager){
-	manager->currentBoard = "./lib/Levels/lvl2.txt";
+	manager->currentBoard = "./lib/Levels/lvl3.txt";
 	loadBoard(manager, manager->currentBoard);
 }
 

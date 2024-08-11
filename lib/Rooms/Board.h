@@ -10,7 +10,9 @@
 #include "../Entities/Laser.h"
 
 struct Board {
+	SDL_Texture* background;
 	SDL_Texture* block_sheet;
+	SDL_Texture* character;
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
 	Laser* lasers;
