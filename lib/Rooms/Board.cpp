@@ -15,8 +15,6 @@ using namespace std;
 /* Position used in BFS search for edges and nodes */
 typedef pair<int, int> Position;
 
-
-
 #define blockSize 50
 #define yOffset 30
 #define xOffset 50
@@ -57,7 +55,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 		}
 	}
 	
-	/* Delete old entity data if we are loading a new board */
+	// Delete old entity data if we are loading a new board
 	if(f == 2){
 		free(room->lasers);
 		for(int i = 0; i < room->block1; i++){
@@ -83,9 +81,9 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}else if(room->board[i][j] == 5){ //Border
 			}else if(room->board[i][j] == 6){ //Vertical Laser
 				room->nlasers++;
-			}else if(room->board[i][j] == 7){
+			}else if(room->board[i][j] == 7){ //Horizontal Laser
 				room->nlasers++;
-			}else if(room->board[i][j] == 8){
+			}else if(room->board[i][j] == 8){ //Moveable block 2
 				room->block2++;
 			}
 		}
@@ -93,9 +91,6 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->lasers = static_cast<Laser*>(malloc(room->nlasers * sizeof(Laser)));
 	room->blocks1 = (int**)(malloc(room->block1 * sizeof(int *)));
 	room->blocks2 = (int**)(malloc(room->block2 * sizeof(int *)));
-	//int blockSize = 50;
-	//int yOffset = 30;
-	//int xOffset = 50;
 	int s = 0;
 	int b1 = 0;
 	int b2 = 0;
@@ -202,7 +197,7 @@ void drawBoard(Board* room){
 					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
 					l++;
 				}
-			}else if(room->board[i][j] == 7){
+			}else if(room->board[i][j] == 7){ //Horizontal Laser
 				if(room->lasers != NULL){
 					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
 					l++;
@@ -312,10 +307,15 @@ bool moveGroup(Board* room, const vector<Position>& block_group, const Position&
  * boolean: Successful or unsuccessful move
  */
 bool movePlayer(Board* room, Position& player_pos, const Position& direction){
+	//Get the new position of the player
 	Position new_player_pos = {player_pos.first	+ direction.first, player_pos.second + direction.second};
+
+	//If they hit a wall or a barrier
 	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
 		return false;
 	}
+
+	//If they hit a moveable bock
 	if(room->board[new_player_pos.first][new_player_pos.second] == 1){
 		vector<Position> block_group = findGroup(room, new_player_pos, 1);
 		if(!(moveGroup(room, block_group, direction, 1))){
@@ -329,6 +329,7 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 		}
 	}
 
+	//Update the players location, and update their previous location
 	int prev = 0;
 	if(!( room->board[player_pos.first][player_pos.second] == 2 ||  room->board[player_pos.first][player_pos.second] == 3 || room->board[player_pos.first][player_pos.second] == 4)){
 		prev = room->board[player_pos.first][player_pos.second];
