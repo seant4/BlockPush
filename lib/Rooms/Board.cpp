@@ -15,6 +15,12 @@ using namespace std;
 /* Position used in BFS search for edges and nodes */
 typedef pair<int, int> Position;
 
+
+
+#define blockSize 50
+#define yOffset 30
+#define xOffset 50
+
 /* Instantiates objects used in a given room
  *
  * @param
@@ -87,9 +93,9 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->lasers = static_cast<Laser*>(malloc(room->nlasers * sizeof(Laser)));
 	room->blocks1 = (int**)(malloc(room->block1 * sizeof(int *)));
 	room->blocks2 = (int**)(malloc(room->block2 * sizeof(int *)));
-	int blockSize = 50;
-	int yOffset = 30;
-	int xOffset = 50;
+	//int blockSize = 50;
+	//int yOffset = 30;
+	//int xOffset = 50;
 	int s = 0;
 	int b1 = 0;
 	int b2 = 0;
@@ -109,7 +115,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 				room->lasers[s].orientation = 0;
 				room->lasers[s].dist = 0;
 				s++;
-			}else if(room->board[i][j] == 7){ //Vertical Laser
+			}else if(room->board[i][j] == 7){ //Horizontal Laser
 				room->lasers[s].x = j;
 				room->lasers[s].y = i;
 				room->lasers[s].orientation = 1;
@@ -132,9 +138,9 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
  */
 void drawBoard(Board* room){
 	//Initialize local parameters
-	int blockSize = 50;
-	int yOffset = 30;
-	int xOffset = 50;
+	//int blockSize = 50;
+	//int yOffset = 30;
+	//int xOffset = 50;
 
 	//Render background
 	SDL_Rect dest = {0,0,1280,720};
