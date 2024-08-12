@@ -16,6 +16,10 @@ struct Board {
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
 	Laser* lasers;
+	int** blocks1;
+	int** blocks2;
+	int block1;
+	int block2;
 	int nlasers;
 	int width;
 	int height;
@@ -23,6 +27,6 @@ struct Board {
 }; 
 
 
-void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp);
+void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp, int f);
 int updateBoard(Board* room, int key);
 void drawBoard(Board* room);

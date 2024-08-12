@@ -23,7 +23,8 @@ typedef pair<int, int> Position;
  * int height: height of the game board
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
-void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp){
+void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp, int f){
+	/* Define initial variables and load textures */
 	const char *dir1 = "./assets/sprites/background.bmp";
 	room->background = createTexture(dir1);
 	const char *dir3 = "./assets/sprites/manBig.bmp";
@@ -35,7 +36,13 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->width = width;
 	room->board = temp;
 	room->wincon.clear();
-	//Find win condition tiles
+
+	/* Load entities from board matrix
+	 *
+	 * This allows the game to manage the state of the entities 
+	 * on the board, such as the lasers and blocks
+	 *
+	 */
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
 			if(room->board[i][j] == 4){
@@ -43,24 +50,59 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
+	
+	/* Delete old entity data if we are loading a new board */
+	if(f == 2){
+		free(room->lasers);
+		for(int i = 0; i < room->block1; i++){
+			free(room->blocks1[i]);
+		}
+		for(int i = 0; i < room->block2; i++){
+			free(room->blocks2[i]);
+		}
+		free(room->blocks1);
+		free(room->blocks2);
+	}
+
+	// Allocate arrays for each set of entities
+	room->nlasers = 0;
+	room->block1 = 0;
+	room->block2 = 0;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player
 			}else if(room->board[i][j] == 3){ //Wall
 			}else if(room->board[i][j] == 1){ //Moveable block
+				room->block1++;
 			}else if(room->board[i][j] == 5){ //Border
 			}else if(room->board[i][j] == 6){ //Vertical Laser
 				room->nlasers++;
 			}else if(room->board[i][j] == 7){
 				room->nlasers++;
+			}else if(room->board[i][j] == 8){
+				room->block2++;
 			}
 		}
 	}
-	free(room->lasers);
 	room->lasers = static_cast<Laser*>(malloc(room->nlasers * sizeof(Laser)));
+	room->blocks1 = (int**)(malloc(room->block1 * sizeof(int *)));
+	room->blocks2 = (int**)(malloc(room->block2 * sizeof(int *)));
+	int blockSize = 50;
+	int yOffset = 30;
+	int xOffset = 50;
 	int s = 0;
+	int b1 = 0;
+	int b2 = 0;
+
+	//Load all of the entities in to their respective arrays
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
+			if(room->board[i][j] == 1){ //Moveable block
+				room->blocks1[b1] = (int*)(malloc(2 * sizeof(int)));
+				room->blocks1[b1][0] = (j * blockSize) + yOffset;
+				room->blocks1[b1][1] = (i * blockSize) + xOffset;
+				b1++;
+			}
 			if(room->board[i][j] == 6){ //Vertical Laser
 				room->lasers[s].x = j;
 				room->lasers[s].y = i;
@@ -73,6 +115,11 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 				room->lasers[s].orientation = 1;
 				room->lasers[s].dist = 0;
 				s++;
+			}else if(room->board[i][j] == 8){
+				room->blocks2[b2] = (int*)(malloc(2 * sizeof(int)));
+				room->blocks2[b2][0] = (j * blockSize) + yOffset;
+				room->blocks2[b2][1] = (i * blockSize) + xOffset;
+				b2++;
 			}
 		}
 	}
@@ -104,23 +151,33 @@ void drawBoard(Board* room){
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect boardBack = {yOffset,xOffset,room->width * 50, room->height * 50};
 	SDL_RenderFillRect(renderer, &boardBack);
+
 	//Print win cons (These are stored seperately)	
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
 		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
 	}
+
 	//Get draw pos of every block on the board (used for finding connections between blocks
-	std::vector<std::vector<int>> blocks1;
-	std::vector<std::vector<int>> blocks2;
-	for(int i = 0; i < room->height; i++){
-		for(int j = 0; j < room->width; j++){
-			if(room->board[i][j] == 1){
-				blocks1.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
-			}else if(room->board[i][j] == 8){
-				blocks2.push_back(std::vector<int>{(j*blockSize) + yOffset, (i * blockSize) + xOffset});
+	int b1 = 0;
+	int b2 = 0;
+	if(room->blocks1 != NULL){
+		for(int i = 0; i < room->height; i++){
+			for(int j = 0; j < room->width; j++){
+				if(room->board[i][j] == 1){
+					room->blocks1[b1][0] = (j * blockSize) + yOffset;
+					room->blocks1[b1][1] = (i * blockSize) + xOffset;
+					b1++;
+				}else if(room->board[i][j] == 8){
+					room->blocks2[b2][0] = (j * blockSize) + yOffset;
+					room->blocks2[b2][1] = (i * blockSize) + xOffset;
+					b2++;
+				}
 			}
 		}
 	}
+
+	//Draw each item on the board
 	int l = 0;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
@@ -129,7 +186,9 @@ void drawBoard(Board* room){
 			}else if(room->board[i][j] == 3){ //Wall
 				drawWall((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 1){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks1, 1);
+				if(room->blocks1 != NULL){
+					drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, room->blocks1, room->block1, 1);
+				}
 			}else if(room->board[i][j] == 5){ //Border
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser		
@@ -143,7 +202,9 @@ void drawBoard(Board* room){
 					l++;
 				}
 			}else if(room->board[i][j] == 8){ //Moveable block
-				drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, blocks2, 8);
+				if(room->blocks2 != NULL){
+					drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, room->blocks2, room->block2, 8);
+				}
 			}
 		}
 	}
@@ -160,8 +221,6 @@ void drawBoard(Board* room){
  * 2d vector containing the positions of all blocks connected 
  * 	through eachother to the player (or some starting position)
  */
-
-
 vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const Position& start_pos){
 	vector<Position> group;
 	vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(), false));
@@ -191,9 +250,6 @@ vector<Position> boardBFS(std::vector<std::vector<int>> board, int type, const P
 	return group;
 }
 
-
-
-
 vector<Position> findGroup(Board* room, const Position& start_pos, int type){
 	return(boardBFS(room->board,type,start_pos)); 
 }
@@ -209,7 +265,6 @@ vector<Position> findGroup(Board* room, const Position& start_pos, int type){
  * @return:
  * boolean: successful or unsuccessful move
  */
-//TODO: Update to take more bock types
 bool moveGroup(Board* room, const vector<Position>& block_group, const Position& direction, int type){
 	vector<Position> new_positions;
 	for(const auto& pos: block_group){
@@ -255,7 +310,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
 		return false;
 	}
-	//TODO: Update to take block type (more block types in future)
 	if(room->board[new_player_pos.first][new_player_pos.second] == 1){
 		vector<Position> block_group = findGroup(room, new_player_pos, 1);
 		if(!(moveGroup(room, block_group, direction, 1))){
@@ -269,9 +323,6 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 		}
 	}
 
-
-	//Move player
-	//Update for new block types
 	int prev = 0;
 	if(!( room->board[player_pos.first][player_pos.second] == 2 ||  room->board[player_pos.first][player_pos.second] == 3 || room->board[player_pos.first][player_pos.second] == 4)){
 		prev = room->board[player_pos.first][player_pos.second];
@@ -304,12 +355,13 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
  * 3 = Reset level
  */
 int updateBoard(Board* room, int key){
-	std::vector<std::vector<int>> previous = room->board;
+	//Update moving background
 	--(room->scrollingOffset);
 	if(room->scrollingOffset < -1280){
 		room->scrollingOffset = 0;
 	}
-	//Update moving background
+
+	//Find the players position
 	Position player_pos;
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
@@ -319,6 +371,7 @@ int updateBoard(Board* room, int key){
 		}
 	}
 
+	//Update room based on user input
 	bool flag = true;
 	switch(key){
 		case 1:
@@ -338,10 +391,21 @@ int updateBoard(Board* room, int key){
 			break;
 		case 10:
 			free(room->lasers);
+			for(int i = 0; i < room->block1; i++){
+				free(room->blocks1[i]);
+			}
+			free(room->blocks1);
+			for(int i = 0; i < room->block2; i++){
+				free(room->blocks2[i]);
+			}
+			free(room->blocks2);
 			room->lasers = NULL;
+			room->blocks1 = NULL;
+			room->blocks2 = NULL;
 			break;
 	}
 
+	//Update the lasers
 	if(room->lasers != NULL){
 		for(int i = 0; i < room->nlasers; i++){
 			if(room->lasers[i].update(room->board)){
@@ -349,6 +413,8 @@ int updateBoard(Board* room, int key){
 			}
 		}
 	}
+	
+	//Detect the win condition
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
 		if(!(room->board[coord.first][coord.second] == 1)){

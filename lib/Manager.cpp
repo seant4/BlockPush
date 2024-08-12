@@ -41,21 +41,21 @@ void loadLevel(std::string path, std::vector<std::vector<int>>& temp){
  * Manager* manager: Room manager object
  * std::string path: Path to level file
  */
-void loadBoard(Manager* manager, std::string path){
+void loadBoard(Manager* manager, std::string path, int f){
 	SDL_RenderClear(renderer);
 	std::vector<std::vector<int>> map;
 	loadLevel(path, map);
 	int width = map[0].size();
 	int height = map.size();
 	manager->overworld.create();
-	createBoard(&(manager->board),width, height, map);
+	createBoard(&(manager->board),width, height, map, f);
 }
 
-void changeBoard(Manager* manager, int b){
+void changeBoard(Manager* manager, int b, int f){
 	manager->fader = {255,6,0};
 	manager->currentBoard = b;
 	std::string path = "./lib/Levels/lvl" + std::to_string(b) + ".txt";
-	loadBoard(manager, path);
+	loadBoard(manager, path, f);
 }
 
 /* Update loop (game logic loop)
@@ -75,11 +75,11 @@ void updateManager(Manager* manager, int key){
 		manager->fader = {0,6,1};
 
 	}else if(state == 3){
-		changeBoard(manager, manager->currentBoard);
+		changeBoard(manager, manager->currentBoard, 2);
 	}
 	if(fadeState == true && manager->boardTrans == true){
 		manager->currentBoard++;
-		changeBoard(manager, manager->currentBoard);
+		changeBoard(manager, manager->currentBoard, 2);
 		manager->boardTrans = false;
 	}
 
@@ -93,7 +93,7 @@ void updateManager(Manager* manager, int key){
 void createManager(Manager* manager){
 	manager->fader = {255,6,0};
 	manager->currentBoard = 1;
-	changeBoard(manager, manager->currentBoard);
+	changeBoard(manager, manager->currentBoard, 1);
 	manager->boardTrans = false;
 }
 
