@@ -8,11 +8,13 @@
 #include "../Entities/WinBlock.h"
 #include "../Entities/Border.h"
 #include "../Entities/Laser.h"
-
+#include "../Entities/Scientist.h"
 struct Board {
 	SDL_Texture* background;
 	SDL_Texture* block_sheet;
 	SDL_Texture* character;
+	Scientist girl;
+	int frame;
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
 	Laser* lasers;

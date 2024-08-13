@@ -99,10 +99,13 @@ int main(int argc, char* args[]){
 							break;
 						#endif
 					}
-				}else if(e.type == SDL_TEXTINPUT){
+				}
+				#ifdef DEBUG
+				else if(e.type == SDL_TEXTINPUT){
 					inputText += e.text.text;
 					renderText = true;
 				}
+				#endif
         	}
 
 			//Draw room manager here
