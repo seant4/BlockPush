@@ -1,7 +1,7 @@
 
 debug ?= false
 ifeq ($(debug), true)
-	DEBUG_FLAGS = -pg -g
+	DEBUG_FLAGS = -pg -g -DDEBUG
 else
 	DEBUG_FLAGS =
 endif

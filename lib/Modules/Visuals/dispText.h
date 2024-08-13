@@ -1,5 +1,4 @@
 #pragma once
 #include <SDL2/SDL.h>
-#include "dispText.h"
-
-SDL_Texture* createTexture(char* p);
+#include <SDL2/SDL_ttf.h>
+void dispText(int x, int y, int w, int h, char* t, TTF_Font* font);

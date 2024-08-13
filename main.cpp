@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#ifdef DEBUG
+#include <sstream>
+#endif
 #include "./lib/Manager.h"
 #include "renderer.h"
+#include "./lib/Modules/Visuals/dispText.h"
 
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
@@ -41,7 +45,9 @@ int main(int argc, char* args[]){
 	double framerate = 60.0; //Set framerate here
     renderer = initRender(window);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
+	#ifdef DEBUG
+	TTF_Font* tnr = TTF_OpenFont("./Assets/fonts/tnr.ttf", 24);
+	#endif
 	SDL_RenderSetLogicalSize(renderer, 1280, 720);
 	SDL_RenderSetVSync(renderer, 1);
     bool quit = false;
@@ -80,9 +86,29 @@ int main(int argc, char* args[]){
 					}
 				}
         	}
+
 			//Draw room manager here
 			updateManager(&manager, 0);
 			drawManager(&manager);
+			//Debug mode
+			#ifdef DEBUG
+			char str[128];
+			strcpy(str, "");
+			double fps = (1000/delta);
+			int round = static_cast<int>(fps+0.5);
+			int b = manager.currentBoard;
+			char bstr[128];
+			strcat(str, "FPS: ");
+			sprintf(bstr, "%d", round);
+			strcat(str, bstr);
+			sprintf(bstr, "%d", b);
+			strcat(str, ", LEVEL: ");
+			strcat(str, bstr);
+			SDL_Rect back = {0,0,100,50};
+			SDL_SetRenderDrawColor(renderer, 169,169,169,150);
+			SDL_RenderFillRect(renderer, &back);
+			dispText(0,0,200,50,str, tnr);
+			#endif
         	SDL_RenderPresent(renderer);
 		}
     }
