@@ -18,3 +18,6 @@ struct Manager{
 void updateManager(Manager* manager, int key);
 void createManager(Manager* manager);
 void drawManager(Manager* manager);
+#ifdef DEBUG
+void debugManager(Manager* manager, std::string input);
+#endif

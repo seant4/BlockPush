@@ -47,6 +47,8 @@ int main(int argc, char* args[]){
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	#ifdef DEBUG
 	TTF_Font* tnr = TTF_OpenFont("./Assets/fonts/tnr.ttf", 24);
+	std::string inputText;
+	SDL_StartTextInput();
 	#endif
 	SDL_RenderSetLogicalSize(renderer, 1280, 720);
 	SDL_RenderSetVSync(renderer, 1);
@@ -56,11 +58,13 @@ int main(int argc, char* args[]){
 	Manager manager;
 	createManager(&manager);
     while(!quit){
+		#ifdef DEBUG
+		bool renderText = false;
+		#endif
 		a = SDL_GetTicks();
 		delta = a - b;
 		if(delta > 1000/framerate){
 			b=a;
-		//	printf("%d\n", b);
 			while(SDL_PollEvent(&e) != 0){
             	if(e.type==SDL_QUIT){
 					updateManager(&manager, 10);
@@ -83,7 +87,21 @@ int main(int argc, char* args[]){
 							break;
 						case SDLK_r:
 							updateManager(&manager, 5);
+							break;
+
+						#ifdef DEBUG
+						case SDLK_BACKSPACE:
+							if(inputText.size() > 0){ inputText.pop_back(); renderText = true; };
+							break;
+						case SDLK_RETURN:
+							debugManager(&manager, inputText);
+							inputText = "";
+							break;
+						#endif
 					}
+				}else if(e.type == SDL_TEXTINPUT){
+					inputText += e.text.text;
+					renderText = true;
 				}
         	}
 
@@ -104,14 +122,19 @@ int main(int argc, char* args[]){
 			sprintf(bstr, "%d", b);
 			strcat(str, ", LEVEL: ");
 			strcat(str, bstr);
-			SDL_Rect back = {0,0,100,50};
+			SDL_Rect back = {0,0,300,50};
 			SDL_SetRenderDrawColor(renderer, 169,169,169,150);
 			SDL_RenderFillRect(renderer, &back);
 			dispText(0,0,200,50,str, tnr);
+			if(inputText.size() > 0){
+				char *instr = &inputText[0];
+				dispText(300,0,300,100,instr, tnr);
+			}
 			#endif
         	SDL_RenderPresent(renderer);
 		}
     }
+
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();

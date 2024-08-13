@@ -8,7 +8,6 @@
 #include "./Modules/Visuals/fade.h"
 #include "./Rooms/Board.h"
 
-
 /* Loads level from .txt file
  *
  * @param
@@ -110,3 +109,21 @@ void drawManager(Manager* manager){
 	drawFade(&(manager->fader));	
 }
 
+
+
+#ifdef DEBUG
+void debugManager(Manager* manager, std::string input){
+	size_t openParen = input.find('(');
+	size_t closeParen = input.find(')');
+	if (openParen == std::string::npos || closeParen == std::string::npos || openParen >= closeParen) {
+        throw std::invalid_argument("Invalid format: Missing or misplaced parentheses.");
+    }
+	std::string command = input.substr(0, openParen);
+	std::string param = input.substr(openParen+1, closeParen - 1);
+	int parami = stoi(param);
+	if(command == "changeB"){
+		manager->currentBoard = parami;
+		changeBoard(manager, manager->currentBoard, 2);
+	}
+}
+#endif
