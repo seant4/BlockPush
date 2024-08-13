@@ -44,6 +44,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->width = width;
 	room->board = temp;
 	room->wincon.clear();
+	room->scrollingOffset=0;
 
 	/* Load entities from board matrix
 	 *
@@ -136,15 +137,13 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
  * Board* room: Room object
  */
 void drawBoard(Board* room){
-	//Initialize local parameters
-	//int blockSize = 50;
-	//int yOffset = 30;
-	//int xOffset = 50;
 
 	//Render background
-	SDL_Rect dest = {0,0,1280,720};
+	SDL_Rect dest = {room->scrollingOffset,0,1920,1080};
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
-
+	dest = {room->scrollingOffset + 1920, 0, 1920, 1080};
+	SDL_RenderCopy(renderer, room->background, NULL, &dest);
+	//Render NPC Characters
 	dest = {700,200, 500,500};
 	SDL_RenderCopy(renderer, room->lab, NULL, &dest);
 
@@ -365,7 +364,7 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 int updateBoard(Board* room, int key){
 	//Update moving background
 	--(room->scrollingOffset);
-	if(room->scrollingOffset < -1280){
+	if(room->scrollingOffset < -1920){
 		room->scrollingOffset = 0;
 	}
 
