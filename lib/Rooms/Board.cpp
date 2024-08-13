@@ -32,9 +32,11 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	const char *dir1 = "./assets/sprites/background.bmp";
 	room->frame = 0;
 	room->background = createTexture(dir1);
+	const char *dir4 = "./assets/sprites/room.bmp";
+	room->lab = createTexture(dir4);
 	const char *dir3 = "./assets/sprites/girl_idle.bmp";
 	room->character = createTexture(dir3);
-	room->girl = {1004,50,246,316,room->character, 0,0};
+	room->girl = {954,250,246,316,room->character, 0,0};
 	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
@@ -142,6 +144,9 @@ void drawBoard(Board* room){
 	//Render background
 	SDL_Rect dest = {0,0,1280,720};
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
+
+	dest = {700,200, 500,500};
+	SDL_RenderCopy(renderer, room->lab, NULL, &dest);
 
 	room->girl.draw();
 	//Render back of gameboard

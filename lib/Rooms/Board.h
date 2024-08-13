@@ -13,6 +13,7 @@ struct Board {
 	SDL_Texture* background;
 	SDL_Texture* block_sheet;
 	SDL_Texture* character;
+	SDL_Texture* lab;
 	Scientist girl;
 	int frame;
 	std::vector<std::vector<int>> board;
