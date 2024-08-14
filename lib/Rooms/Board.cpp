@@ -140,7 +140,7 @@ void drawBoard(Board* room){
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
 	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_Rect boardBack = {yOffset,xOffset,room->width * 50, room->height * 50};
+	SDL_Rect boardBack = {yOffset,xOffset,room->width * 100, room->height * 100};
 	SDL_RenderFillRect(renderer, &boardBack);
 
 	//Print win cons (These are stored seperately)	
