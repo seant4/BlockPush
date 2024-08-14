@@ -48,6 +48,7 @@ void loadBoard(Manager* manager, std::string path, int f){
 	int height = map.size();
 	manager->overworld.create();
 	createBoard(&(manager->board),width, height, map, f);
+	map.clear();
 }
 
 void changeBoard(Manager* manager, int b, int f){

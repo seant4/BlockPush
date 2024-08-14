@@ -57,10 +57,10 @@ int main(int argc, char* args[]){
 	//Typically set up room manager here
 	Manager manager;
 	createManager(&manager);
+	#ifdef DEBUG
+	bool renderText = false;
+	#endif
     while(!quit){
-		#ifdef DEBUG
-		bool renderText = false;
-		#endif
 		a = SDL_GetTicks();
 		delta = a - b;
 		if(delta > 1000/framerate){

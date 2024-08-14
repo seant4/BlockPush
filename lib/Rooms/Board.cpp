@@ -37,6 +37,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->block_sheet = createTexture(dir2);
 	room->height = height;
 	room->width = width;
+	room->board.clear();
 	room->board = temp;
 	room->wincon.clear();
 	room->scrollingOffset=0;
