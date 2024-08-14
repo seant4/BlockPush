@@ -184,12 +184,12 @@ void drawBoard(Board* room){
 				drawBorder((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet);
 			}else if(room->board[i][j] == 6){ //Vertical Laser		
 				if(room->lasers != NULL){
-					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset, room->block_sheet);
 					l++;
 				}
 			}else if(room->board[i][j] == 7){ //Horizontal Laser
 				if(room->lasers != NULL){
-					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset);
+					room->lasers[l].draw((j*blockSize) + yOffset, (i * blockSize) + xOffset, room->block_sheet);
 					l++;
 				}
 			}else if(room->board[i][j] == 8){ //Moveable block

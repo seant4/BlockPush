@@ -7,6 +7,6 @@ struct Laser : public Entity{
 	int dist; //Width
 	int orientation;
 	bool update(std::vector<std::vector<int>> board);
-	void draw(int x, int y);
+	void draw(int x, int y, SDL_Texture* t);
 };
 
