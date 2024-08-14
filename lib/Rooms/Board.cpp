@@ -33,10 +33,12 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->frame = 0;
 	room->background = createTexture(dir1);
 	const char *dir4 = "./assets/sprites/room.bmp";
+	const char *dir5 = "./assets/sprites/man_idle.bmp";
 	room->lab = createTexture(dir4);
 	const char *dir3 = "./assets/sprites/girl_idle.bmp";
 	room->character = createTexture(dir3);
-	room->girl = {954,250,246,316,room->character, 0,0};
+	room->man = {1054, 250, 123, 159, createTexture(dir5), 0,0};
+	room->girl = {854,250,123,200,room->character, 0,0};
 	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
@@ -144,10 +146,10 @@ void drawBoard(Board* room){
 	dest = {room->scrollingOffset + 1920, 0, 1920, 1080};
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
 	//Render NPC Characters
-	dest = {700,200, 500,500};
+	dest = {700,200, 500,250};
 	SDL_RenderCopy(renderer, room->lab, NULL, &dest);
-
 	room->girl.draw();
+	room->man.draw();
 	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect boardBack = {yOffset,xOffset,room->width * 50, room->height * 50};

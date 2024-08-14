@@ -15,6 +15,7 @@ struct Board {
 	SDL_Texture* character;
 	SDL_Texture* lab;
 	Scientist girl;
+	Scientist man;
 	int frame;
 	std::vector<std::vector<int>> board;
 	std::vector<std::pair<int, int>> wincon;
