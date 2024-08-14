@@ -14,3 +14,10 @@ void Scientist::draw(){
 
 	frame++;
 }
+
+void drawScientist(int x, int y, int w, int h, int off, int frame, SDL_Texture* t){
+	SDL_Rect srcrect = {off * 100,(frame % 2) * 100,100,100};
+	SDL_Rect dstrect = {x,y,w,h};
+	SDL_RenderCopy(renderer, t, &srcrect, &dstrect);
+
+}

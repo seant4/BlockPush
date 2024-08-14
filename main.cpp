@@ -50,7 +50,7 @@ int main(int argc, char* args[]){
 	std::string inputText;
 	SDL_StartTextInput();
 	#endif
-	SDL_RenderSetLogicalSize(renderer, 1280, 720);
+	SDL_RenderSetLogicalSize(renderer, 1920, 1080);
 	SDL_RenderSetVSync(renderer, 1);
     bool quit = false;
     SDL_Event e;

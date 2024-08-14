@@ -15,9 +15,9 @@ using namespace std;
 /* Position used in BFS search for edges and nodes */
 typedef pair<int, int> Position;
 
-#define blockSize 50
-#define yOffset 30
-#define xOffset 50
+#define blockSize 100
+#define yOffset 315
+#define xOffset 20
 
 /* Instantiates objects used in a given room
  *
@@ -32,13 +32,6 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	const char *dir1 = "./assets/sprites/background.bmp";
 	room->frame = 0;
 	room->background = createTexture(dir1);
-	const char *dir4 = "./assets/sprites/room.bmp";
-	const char *dir5 = "./assets/sprites/man_idle.bmp";
-	room->lab = createTexture(dir4);
-	const char *dir3 = "./assets/sprites/girl_idle.bmp";
-	room->character = createTexture(dir3);
-	room->man = {1054, 250, 123, 159, createTexture(dir5), 0,0};
-	room->girl = {854,250,123,200,room->character, 0,0};
 	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
@@ -145,11 +138,6 @@ void drawBoard(Board* room){
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
 	dest = {room->scrollingOffset + 1920, 0, 1920, 1080};
 	SDL_RenderCopy(renderer, room->background, NULL, &dest);
-	//Render NPC Characters
-	dest = {700,200, 500,250};
-	SDL_RenderCopy(renderer, room->lab, NULL, &dest);
-	room->girl.draw();
-	room->man.draw();
 	//Render back of gameboard
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect boardBack = {yOffset,xOffset,room->width * 50, room->height * 50};
@@ -208,9 +196,12 @@ void drawBoard(Board* room){
 				if(room->blocks2 != NULL){
 					drawBlock((j * blockSize) + yOffset, (i * blockSize) + xOffset, blockSize, blockSize, room->block_sheet, room->blocks2, room->block2, 8);
 				}
+			}else if(room->board[i][j] == 9){ //NPC
+				drawScientist((j * blockSize) + yOffset, (i * blockSize) + xOffset,blockSize,blockSize, 6, room->frame, room->block_sheet);
 			}
 		}
 	}
+	room->frame++;
 }
 
 /* BFS algorithm to find connections between the player object and 
@@ -313,7 +304,8 @@ bool movePlayer(Board* room, Position& player_pos, const Position& direction){
 	Position new_player_pos = {player_pos.first	+ direction.first, player_pos.second + direction.second};
 
 	//If they hit a wall or a barrier
-	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5){
+	if(room->board[new_player_pos.first][new_player_pos.second] == 3 || room->board[new_player_pos.first][new_player_pos.second] == 5 || 
+			room->board[new_player_pos.first][new_player_pos.second] == 9){
 		return false;
 	}
 

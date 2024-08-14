@@ -12,3 +12,5 @@ struct Scientist{
 
 	void draw();
 };
+
+void drawScientist(int x, int y, int w, int h, int off, int frame, SDL_Texture* t);
