@@ -88,7 +88,8 @@ int main(int argc, char* args[]){
 						case SDLK_r:
 							updateManager(&manager, 5);
 							break;
-
+						case SDLK_u:
+							updateManager(&manager, 6);
 						#ifdef DEBUG
 						case SDLK_BACKSPACE:
 							if(inputText.size() > 0){ inputText.pop_back(); renderText = true; };

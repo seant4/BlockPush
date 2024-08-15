@@ -40,6 +40,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	room->board.clear();
 	room->board = temp;
 	room->wincon.clear();
+	room->board_stack.clear();
 	room->scrollingOffset=0;
 
 	/* Load entities from board matrix
@@ -125,6 +126,7 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
+	room->board_stack.push_back(room->board);
 }
 
 /* Draws objects within the room
@@ -389,7 +391,14 @@ int updateBoard(Board* room, int key){
 			movePlayer(room, player_pos, {0, 1});
 			break;
 		case 5:
+			room->board_stack.clear();
 			return 3;
+			break;
+		case 6:
+			if(room->board_stack.size() > 1){
+				room->board = room->board_stack[room->board_stack.size() - 2];
+				room->board_stack.pop_back();
+			}
 			break;
 		case 10:
 			free(room->lasers);
@@ -425,6 +434,20 @@ int updateBoard(Board* room, int key){
 	}	
 	if(flag){
 		return 2;
+	}
+
+	//Handle undo
+	bool flagU = false;
+	if(room->board_stack.size() > 0){
+		for(int i = 0; i < room->height; i++){
+			for(int j = 0; j < room->width; j++){
+				if((room->board_stack[room->board_stack.size() - 1][i][j] != room->board[i][j]) && !flagU){
+					room->board_stack.push_back(room->board);
+					flagU = true;
+					break;
+				}
+			}
+		}
 	}
 	return 1;
 }

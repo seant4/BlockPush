@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 
 void Laser::draw(int x, int y, SDL_Texture* t){
-	SDL_SetRenderDrawColor(renderer, 0,0,0,150);
+	SDL_SetRenderDrawColor(renderer, 255,115,115,150);
 	SDL_Rect srcrect;
 	SDL_Rect dstrect;
 	SDL_Rect dstrect2;

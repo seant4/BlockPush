@@ -16,6 +16,7 @@ struct Board {
 	SDL_Texture* lab;
 	int frame;
 	std::vector<std::vector<int>> board;
+	std::vector<std::vector<std::vector<int>>> board_stack;
 	std::vector<std::pair<int, int>> wincon;
 	Laser* lasers;
 	int** blocks1;
