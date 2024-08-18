@@ -28,27 +28,35 @@ typedef pair<int, int> Position;
  * std::vector<std::vector<int>> temp: Game board matrix (loaded from the room manager
  */
 void createBoard(Board* room, int width, int height, std::vector<std::vector<int>> temp, int f){
-	/* Define initial variables and load textures */
+	// Set the sprites that the board
 	const char *dir1 = "./assets/sprites/background.bmp";
-	room->frame = 0;
 	room->background = createTexture(dir1);
-	room->nlasers = 0;
 	const char *dir2 = "./assets/sprites/block_sheet.bmp";
 	room->block_sheet = createTexture(dir2);
-	room->height = height;
-	room->width = width;
+
+	//Ensure if there was previous data of a previous board that it be removed
 	room->board.clear();
-	room->board = temp;
 	room->wincon.clear();
 	room->board_stack.clear();
-	room->scrollingOffset=0;
 
-	/* Load entities from board matrix
+	/* Set room variables:
 	 *
-	 * This allows the game to manage the state of the entities 
-	 * on the board, such as the lasers and blocks
+	 * int nlasers: number of lasers on the board
+	 * int frame: current frame since board has been updated
+	 * int width: width of the board (grid size not screen size)
+	 * int height: height of the board (grid size not screen size)
+	 * std::vector<std::vector<int>> board: the current board
+	 * int scrollingOffset: current scrolling offset position of background
 	 *
 	 */
+	room->nlasers = 0;
+	room->frame = 0;
+	room->height = height;
+	room->width = width;
+	room->board = temp;
+	room->scrollingOffset=0;
+
+	//Find the win condition coordinates
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
 			if(room->board[i][j] == 4){
@@ -56,8 +64,8 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
-	
-	// Delete old entity data if we are loading a new board
+
+	//Delete old board data and board lasers
 	if(f == 2){
 		free(room->lasers);
 		for(int i = 0; i < room->block1; i++){
@@ -97,7 +105,13 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 	int b1 = 0;
 	int b2 = 0;
 
-	//Load all of the entities in to their respective arrays
+
+	/* Load entities from board matrix
+	 *
+	 * This allows the game to manage the state of the entities 
+	 * on the board, such as the lasers and blocks
+	 *
+	 */
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 1){ //Moveable block
@@ -126,6 +140,8 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 			}
 		}
 	}
+
+	//Push back the board stack (for undo)
 	room->board_stack.push_back(room->board);
 }
 
@@ -152,17 +168,17 @@ void drawBoard(Board* room){
 		drawWinBlock((coord.second * blockSize) + yOffset, (coord.first * blockSize) + xOffset , blockSize, blockSize, room->block_sheet);
 	}
 
-	//Get draw pos of every block on the board (used for finding connections between blocks
+	//Get draw pos of every block on the board (used for finding connections between blocks)
 	int b1 = 0;
 	int b2 = 0;
 	if(room->blocks1 != NULL){
 		for(int i = 0; i < room->height; i++){
 			for(int j = 0; j < room->width; j++){
-				if(room->board[i][j] == 1){
+				if(room->board[i][j] == 1){ //Block type 1
 					room->blocks1[b1][0] = (j * blockSize) + yOffset;
 					room->blocks1[b1][1] = (i * blockSize) + xOffset;
 					b1++;
-				}else if(room->board[i][j] == 8){
+				}else if(room->board[i][j] == 8){ //Block type 8
 					room->blocks2[b2][0] = (j * blockSize) + yOffset;
 					room->blocks2[b2][1] = (i * blockSize) + xOffset;
 					b2++;
@@ -172,7 +188,7 @@ void drawBoard(Board* room){
 	}
 
 	//Draw each item on the board
-	int l = 0;
+	int l = 0; //Iterate lasers array
 	for(int i = 0; i < room->height; i++){
 		for(int j = 0; j < room->width; j++){
 			if(room->board[i][j] == 2){ //Player
@@ -204,6 +220,7 @@ void drawBoard(Board* room){
 			}
 		}
 	}
+	//Increase current frame
 	room->frame++;
 }
 
@@ -378,29 +395,29 @@ int updateBoard(Board* room, int key){
 	//Update room based on user input
 	bool flag = true;
 	switch(key){
-		case 1:
+		case 1: //Up
 			movePlayer(room, player_pos, {-1,0});
 			break;
-		case 2:
+		case 2: //Down
 			movePlayer(room, player_pos, {1,0});
 			break;
-		case 3:
+		case 3: //Left
 			movePlayer(room, player_pos, {0, -1});
 			break;
-		case 4:
+		case 4: //Right
 			movePlayer(room, player_pos, {0, 1});
 			break;
-		case 5:
+		case 5: //None
 			room->board_stack.clear();
 			return 3;
 			break;
-		case 6:
+		case 6: //Undo
 			if(room->board_stack.size() > 1){
 				room->board = room->board_stack[room->board_stack.size() - 2];
 				room->board_stack.pop_back();
 			}
 			break;
-		case 10:
+		case 10: //Reset
 			free(room->lasers);
 			for(int i = 0; i < room->block1; i++){
 				free(room->blocks1[i]);
@@ -428,6 +445,7 @@ int updateBoard(Board* room, int key){
 	//Detect the win condition
 	for(int i = 0; i < room->wincon.size(); i++){
 		const auto& coord = room->wincon[i];
+		//TODO: update for future block types
 		if(!(room->board[coord.first][coord.second] == 1)){
 			flag = false;
 		}
