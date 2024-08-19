@@ -6,6 +6,7 @@
 #include "../renderer.h"
 #include "roomstate.h"
 #include "./Modules/Visuals/fade.h"
+#include "./Modules/Visuals/renderSprite.h"
 #include "./Rooms/Board.h"
 
 /* Loads level from .txt file
@@ -65,22 +66,30 @@ void changeBoard(Manager* manager, int b, int f){
  * int key: User input key binding
  */
 void updateManager(Manager* manager, int key){
-	bool fadeState = updateFade(&(manager->fader));
+	manager->fadeState = updateFade(&(manager->fader));
 	int state = 0;
 	if(!(manager->boardTrans)){
 		state = updateBoard(&(manager->board), key);
 	}
-	if(state == 2 && manager->boardTrans == false){
+	if(state == 2 && manager->boardTrans == false){ //Start transition
 		manager->boardTrans = true;
-		manager->fader = {0,6,1};
 
 	}else if(state == 3){
 		changeBoard(manager, manager->currentBoard, 2);
 	}
-	if(fadeState == true && manager->boardTrans == true){
+
+	if(manager->boardTrans == true && manager->transState < 1920 && manager->transState >= 0){//During transition
+		manager->transState += 9;
+	}
+	if(manager->transState >= 1920){	
+		manager->fader = {0,6,1};
+		manager->transState = -1;
+	}
+	if(manager->fadeState == true && manager->boardTrans == true){//End transition
 		manager->currentBoard++;
 		changeBoard(manager, manager->currentBoard, 2);
 		manager->boardTrans = false;
+		manager->transState = 0;
 	}
 
 }
@@ -95,6 +104,7 @@ void createManager(Manager* manager){
 	manager->currentBoard = 1;
 	changeBoard(manager, manager->currentBoard, 1);
 	manager->boardTrans = false;
+	manager->transState = 0;
 }
 
 /* Manager draw event
@@ -105,7 +115,14 @@ void createManager(Manager* manager){
 void drawManager(Manager* manager){
 	if(roomState == 1){
 		drawBoard(&(manager->board));
-	}else{
+	}
+	if(manager->boardTrans == true){
+		int dest[] = {(-1920)+manager->transState,440,1920,200};
+		if(manager->transState == -1){
+			dest[0] = 0;
+		}
+		int rgb[] = {28,22,45};
+		renderRect(dest, rgb, 255);
 	}
 	drawFade(&(manager->fader));	
 }

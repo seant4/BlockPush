@@ -8,10 +8,11 @@
 struct Manager{
 	Board board;
 	bool boardTrans;
+	bool fadeState;
+	int transState;
 	Fade fader;
 	int currentBoard;
 	int n;
-	int fadeState;
 	Overworld overworld;
 };
 
