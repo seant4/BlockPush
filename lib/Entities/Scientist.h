@@ -9,8 +9,6 @@ struct Scientist{
 	SDL_Texture* t;
 	int state;
 	int frame;
-
-	void draw();
 };
 
 void drawScientist(int x, int y, int w, int h, int off, int frame, SDL_Texture* t);

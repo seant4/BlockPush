@@ -1,22 +1,29 @@
 #include "Laser.h"
 #include "../../renderer.h"
+#include "../Modules/Visuals/renderSprite.h"
 #include <SDL2/SDL.h>
 
 void Laser::draw(int x, int y, SDL_Texture* t){
 	SDL_SetRenderDrawColor(renderer, 255,115,115,150);
-	SDL_Rect srcrect;
+	int srcrect[4];
 	SDL_Rect dstrect;
-	SDL_Rect dstrect2;
 	if(orientation == 0){ //Vertial	
 		dstrect = {x,(y + 100),100,h};
-		srcrect = {(7 * 100), 0, 100, 100};
+		srcrect[0] = (7*100);
+		srcrect[1] = 0;
+		srcrect[2] = 100;
+		srcrect[3] = 100;
 	}else{ //Horizontal
 		dstrect = {(x + 100), y,w, 100};	
-		srcrect = {(8 * 100), 0, 100, 100};
+		srcrect[0] = (8*100);
+		srcrect[1] = 0;
+		srcrect[2] = 100;
+		srcrect[3] = 100;
 	}
-	dstrect2 = {x,y, 100,100};
+	int dstrect2[] = {x,y, 100,100};
+
 	SDL_RenderFillRect(renderer, &dstrect);
-	SDL_RenderCopy(renderer, t, &srcrect, &dstrect2);
+	renderSprite(srcrect, dstrect2, t);
 
 }
 

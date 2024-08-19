@@ -1,9 +1,10 @@
 #include <SDL2/SDL.h>
 #include "WinBlock.h"
+#include "../Modules/Visuals/renderSprite.h"
 #include "../../renderer.h"
 
 void drawWinBlock(int x, int y, int w, int h, SDL_Texture* texture){
-	SDL_Rect srcrect = {200,0,100,100};
-	SDL_Rect dstrect = {x,y,w,h};
-	SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
+	int srcPos[] = {200,0,100,100};
+	int destPos[] = {x,y,w,h};
+	renderSprite(srcPos, destPos, texture);
 }

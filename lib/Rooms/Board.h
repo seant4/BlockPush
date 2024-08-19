@@ -13,7 +13,6 @@ struct Board {
 	SDL_Texture* background;
 	SDL_Texture* block_sheet;
 	SDL_Texture* character;
-	SDL_Texture* lab;
 	int frame;
 	std::vector<std::vector<int>> board;
 	std::vector<std::vector<std::vector<int>>> board_stack;
