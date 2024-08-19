@@ -18,9 +18,9 @@ void drawBlock(int x, int y, int w, int h, SDL_Texture* texture, int** blocks, i
 		if(!(blocks[i][0] == x && blocks[i][1] == y)){
 			int dist = sqrt( ((blocks[i][0] - x) * (blocks[i][0] - x)) + ((blocks[i][1] - y) * (blocks[i][1] - y)));
 			if(dist == 100){
-				SDL_Rect dstrect = {x,y,w,h};
-				SDL_SetRenderDrawColor(renderer, 0,0,0,150);
-				SDL_RenderFillRect(renderer, &dstrect);
+				int dstrect[] = {x,y,w,h};
+				int rgb[] = {0,0,0};
+				renderRect(dstrect, rgb, 150);
 				break;
 			}
 					

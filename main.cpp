@@ -5,10 +5,12 @@
 #include <vector>
 #ifdef DEBUG
 #include <sstream>
+#include "./lib/Modules/Visuals/renderSprite.h"
 #endif
 #include "./lib/Manager.h"
 #include "renderer.h"
 #include "./lib/Modules/Visuals/dispText.h"
+
 
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
@@ -126,9 +128,9 @@ int main(int argc, char* args[]){
 			sprintf(bstr, "%d", b);
 			strcat(str, ", LEVEL: ");
 			strcat(str, bstr);
-			SDL_Rect back = {0,0,300,50};
-			SDL_SetRenderDrawColor(renderer, 169,169,169,150);
-			SDL_RenderFillRect(renderer, &back);
+			int back[] = {0,0,300,50};
+			int rgb[] = {169,169,169};
+			renderRect(back, rgb, 150);
 			dispText(0,0,200,50,str, tnr);
 			if(inputText.size() > 0){
 				char *instr = &inputText[0];

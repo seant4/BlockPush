@@ -9,6 +9,7 @@
 #include <queue>
 #include "../../renderer.h"
 #include "../Modules/Visuals/createTexture.h"
+#include "../Modules/Visuals/renderSprite.h"
 
 using namespace std;
 
@@ -153,14 +154,20 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 void drawBoard(Board* room){
 
 	//Render background
-	SDL_Rect dest = {room->scrollingOffset,0,1920,1080};
-	SDL_RenderCopy(renderer, room->background, NULL, &dest);
-	dest = {room->scrollingOffset + 1920, 0, 1920, 1080};
-	SDL_RenderCopy(renderer, room->background, NULL, &dest);
+	int dest[] = {room->scrollingOffset,0,1920,1080};
+	renderSprite(NULL, dest, room->background);
+	dest[0] = room->scrollingOffset + 1920;
+	dest[1] = 0;
+	dest[2] = 1920;
+	dest[3] = 1080;
+	renderSprite(NULL, dest, room->background);
 	//Render back of gameboard
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_Rect boardBack = {yOffset,xOffset,room->width * 100, room->height * 100};
-	SDL_RenderFillRect(renderer, &boardBack);
+	int rgb[] = {255,255,255};
+	dest[0] = yOffset;
+	dest[1] = xOffset;
+	dest[2] = room->width * 100;
+	dest[3] = room->height * 100;
+	renderRect(dest, rgb, 255);
 
 	//Print win cons (These are stored seperately)	
 	for(int i = 0; i < room->wincon.size(); i++){
