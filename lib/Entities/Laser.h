@@ -3,7 +3,8 @@
 #include <vector>
 #include "Entity.h"
 
-struct Laser : public Entity{
+struct Laser{
+	Entity e;
 	int dist; //Width
 	int orientation;
 	bool update(std::vector<std::vector<int>> board);

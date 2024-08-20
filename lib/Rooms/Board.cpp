@@ -122,14 +122,14 @@ void createBoard(Board* room, int width, int height, std::vector<std::vector<int
 				b1++;
 			}
 			if(room->board[i][j] == 6){ //Vertical Laser
-				room->lasers[s].x = j;
-				room->lasers[s].y = i;
+				room->lasers[s].e.x = j;
+				room->lasers[s].e.y = i;
 				room->lasers[s].orientation = 0;
 				room->lasers[s].dist = 0;
 				s++;
 			}else if(room->board[i][j] == 7){ //Horizontal Laser
-				room->lasers[s].x = j;
-				room->lasers[s].y = i;
+				room->lasers[s].e.x = j;
+				room->lasers[s].e.y = i;
 				room->lasers[s].orientation = 1;
 				room->lasers[s].dist = 0;
 				s++;
